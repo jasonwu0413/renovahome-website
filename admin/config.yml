@@ -1,7 +1,7 @@
 backend:
   name: github
-  repo: jasonwu0413 / renovahome-website   # ⚠️注意：把这里改成你的具体仓库，例如 JasonWu/renovahome
-  branch: main                     # 如果你的默认分支叫 master 就填 master
+  repo: jasonwu0413/renovahome-website   
+  branch: main                    
 
 # 上传的照片和视频存放的路径
 media_folder: "assets/uploads"
