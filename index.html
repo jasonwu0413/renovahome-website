@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Renova Home | Design & Renovation Studio</title>
-  <meta name="description" content="Premium home renovation services in Australia: Kitchens, Bathrooms, Decking, Pergolas, Paving & Retaining Walls.">
+  <meta name="description" content="Premium home renovation services in Australia: Pre-Sale Renovations, Kitchens, Bathrooms, Decking, Pergolas, Paving & Retaining Walls.">
   
   <!-- 字体与图标 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,6 +21,7 @@
       --text-muted: #6E6864;
       --border-light: #E8E2DC;
       --accent-gold: #C5A880;
+      --accent-navy: #15375B; /* 匹配 Logo 经典深海蓝色 */
       --accent-charcoal: #2A2826;
       --transition: all 0.3s ease;
     }
@@ -56,10 +57,10 @@
     }
     .top-bar .socials a { color: var(--text-dark); margin-right: 14px; text-decoration: none; }
 
-    /* 导航栏 */
+    /* 导航栏与 Logo */
     header {
       background: var(--bg-cream);
-      padding: 24px 40px 18px;
+      padding: 18px 40px 14px;
       text-align: center;
       position: sticky;
       top: 0;
@@ -67,23 +68,26 @@
       border-bottom: 1px solid rgba(232, 226, 220, 0.7);
       backdrop-filter: blur(10px);
     }
-    .brand-title {
-      font-family: 'Playfair Display', serif;
-      font-style: italic;
-      font-size: 2.8rem;
-      color: var(--text-dark);
-      line-height: 1;
+    .brand-logo-container {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
       text-decoration: none;
-      display: inline-block;
+      color: inherit;
     }
-    .brand-sub {
-      font-size: 0.68rem;
+    .brand-logo-img {
+      height: 76px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+    .brand-tagline {
+      font-size: 0.65rem;
       font-weight: 500;
-      letter-spacing: 0.35em;
+      letter-spacing: 0.3em;
       color: var(--text-muted);
       text-transform: uppercase;
-      display: block;
-      margin-top: 4px;
+      margin-top: 6px;
     }
     nav {
       display: flex;
@@ -114,7 +118,7 @@
       text-align: center;
       padding: 60px 20px;
     }
-    .hero::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.22); }
+    .hero::before { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.25); }
     .hero-content { position: relative; color: #fff; max-width: 900px; }
     .hero-sub { font-size: 0.82rem; letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 18px; }
     .hero-title { font-size: 3.4rem; font-weight: 300; line-height: 1.15; margin-bottom: 28px; text-transform: uppercase; letter-spacing: 0.08em; }
@@ -140,6 +144,47 @@
     .sec-title { font-size: 2.6rem; color: var(--text-dark); margin-bottom: 14px; }
     .sec-desc { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; }
 
+    /* 业务分类网格 */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    .service-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border-light);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+    .service-card:hover { transform: translateY(-6px); box-shadow: 0 16px 32px rgba(0,0,0,0.06); }
+    .service-img-wrap { position: relative; height: 260px; overflow: hidden; }
+    .service-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .service-card:hover .service-img-wrap img { transform: scale(1.05); }
+    .service-info {
+      padding: 24px 20px;
+      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .service-name { font-size: 1.55rem; margin-bottom: 8px; }
+    .service-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6; }
+    .service-link {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-navy);
+      border-bottom: 1px solid var(--border-light);
+      align-self: center;
+      padding-bottom: 4px;
+    }
+
     /* 案例动态画廊 */
     .gallery-filter {
       display: flex;
@@ -160,9 +205,9 @@
       transition: var(--transition);
     }
     .filter-btn.active, .filter-btn:hover {
-      background: var(--accent-charcoal);
+      background: var(--accent-navy);
       color: #fff;
-      border-color: var(--accent-charcoal);
+      border-color: var(--accent-navy);
     }
 
     .project-grid {
@@ -180,17 +225,8 @@
       position: relative;
     }
     .project-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
-    .project-media {
-      position: relative;
-      height: 260px;
-      background: #eee;
-      overflow: hidden;
-    }
-    .project-media img, .project-media video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .project-media { position: relative; height: 260px; background: #eee; overflow: hidden; }
+    .project-media img, .project-media video { width: 100%; height: 100%; object-fit: cover; }
     .project-body { padding: 24px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
     .project-tag { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-gold); font-weight: 600; margin-bottom: 6px; display: block; }
     .project-name { font-size: 1.45rem; margin-bottom: 10px; }
@@ -261,7 +297,7 @@
     .f-btn {
       width: 100%;
       padding: 16px;
-      background: var(--accent-charcoal);
+      background: var(--accent-navy);
       color: #fff;
       border: none;
       letter-spacing: 0.2em;
@@ -272,7 +308,7 @@
     }
     .f-btn:hover { background: var(--accent-gold); }
 
-    /* 隐藏管理员模态框 (老婆发案例的地方) */
+    /* 隐藏管理员入口按钮 */
     .admin-float-btn {
       position: fixed;
       bottom: 18px;
@@ -290,7 +326,7 @@
       transition: var(--transition);
       border: none;
     }
-    .admin-float-btn:hover { background: var(--accent-charcoal); transform: scale(1.1); }
+    .admin-float-btn:hover { background: var(--accent-navy); transform: scale(1.1); }
 
     .admin-modal {
       display: none;
@@ -338,6 +374,7 @@
 </head>
 <body>
 
+  <!-- 顶部简短信息 -->
   <div class="top-bar">
     <div class="socials">
       <a href="#"><i class="fa-brands fa-instagram"></i></a>
@@ -347,9 +384,27 @@
     <div>Call us: <strong>0400 000 000</strong></div>
   </div>
 
+  <!-- 导航栏：嵌入 Logo -->
   <header>
-    <a href="#" class="brand-title">Renova Home</a>
-    <span class="brand-sub">Design • Renovations • Outdoor Living</span>
+    <a href="#" class="brand-logo-container">
+      <!-- 嵌入你给的高清矢量房檐 RENOVA HOME Logo -->
+      <svg class="brand-logo-img" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 屋顶与烟囱 -->
+        <path d="M250 82L132 188H174V120H192V172L250 120L368 226H340L250 146L160 226H132L250 82Z" fill="#15375B"/>
+        <!-- 标志性大写 R -->
+        <path d="M168 168H234C256 168 268 180 268 198C268 214 258 224 242 227L272 278H244L218 234H194V278H168V168ZM194 188V214H230C240 214 246 208 246 201C246 193 240 188 230 188H194Z" fill="#15375B"/>
+        <!-- 窗户与发芽绿叶 -->
+        <rect x="278" y="166" width="76" height="112" rx="2" fill="none" stroke="#15375B" stroke-width="12"/>
+        <line x1="316" y1="166" x2="316" y2="278" stroke="#15375B" stroke-width="8"/>
+        <line x1="270" y1="278" x2="362" y2="278" stroke="#15375B" stroke-width="14"/>
+        <path d="M316 260C316 235 345 220 345 220C345 220 342 248 322 258" fill="#15375B"/>
+        <!-- 品牌文字 RENOVA HOME -->
+        <text x="250" y="356" text-anchor="middle" fill="#15375B" font-family="'Montserrat', sans-serif" font-weight="700" font-size="52" letter-spacing="0.1em">RENOVA</text>
+        <text x="250" y="424" text-anchor="middle" fill="#15375B" font-family="'Montserrat', sans-serif" font-weight="700" font-size="52" letter-spacing="0.18em">HOME</text>
+      </svg>
+      <span class="brand-tagline">Design • Renovations • Pre-Sale Makeovers</span>
+    </a>
+
     <nav>
       <a href="#services">Services</a>
       <a href="#transformations">Before & After</a>
@@ -361,18 +416,142 @@
   <!-- 封面 -->
   <section class="hero">
     <div class="hero-content">
-      <p class="hero-sub">MELBOURNE RENOVATION SPECIALISTS</p>
-      <h1 class="hero-title">CREATING DREAM HOMES & OUTDOOR SANCTUARIES</h1>
-      <a href="#quote" class="btn-light">Start Your Renovation</a>
+      <p class="hero-sub">PRE-SALE MAKEOVERS & RESIDENTIAL RENOVATIONS</p>
+      <h1 class="hero-title">CREATING DREAM HOMES & MAXIMISING VALUE</h1>
+      <a href="#quote" class="btn-light">Book Free Consultation</a>
     </div>
   </section>
 
-  <!-- 前后对比 -->
-  <section id="transformations" class="wrap">
+  <!-- 服务网格：含新增的 Pre-Sale Renovation -->
+  <section id="services" class="wrap">
+    <div class="sec-head">
+      <span class="sec-sub">WHAT WE OFFER</span>
+      <h2 class="sec-title">Specialised Renovation Services</h2>
+      <p class="sec-desc">From full house pre-sale makeovers to custom outdoor structures, we craft high-impact renovations across Melbourne with superior standards.</p>
+    </div>
+
+    <div class="services-grid">
+      <!-- 新增重点服务：Pre-Sale Renovation -->
+      <div class="service-card" style="border: 2px solid var(--accent-gold);">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=700&q=80" alt="Pre-Sale Renovation">
+        </div>
+        <div class="service-info">
+          <div>
+            <span style="font-size:0.65rem; letter-spacing:0.2em; color:var(--accent-gold); font-weight:700; text-transform:uppercase;">High ROI Focus</span>
+            <h3 class="service-name">Pre-Sale Renovation</h3>
+            <p class="service-desc">Strategic cosmetic refreshes, interior repainting, fixture upgrades, and curb-appeal makeovers designed to maximise auction and sales value.</p>
+          </div>
+          <span class="service-link">Maximise Property Value</span>
+        </div>
+      </div>
+
+      <!-- 浴室 -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=700&q=80" alt="Bathroom Renovations">
+        </div>
+        <div class="service-info">
+          <div>
+            <h3 class="service-name">Bathrooms</h3>
+            <p class="service-desc">Luxury freestanding baths, frameless showers, custom vanities, and certified Australian waterproofing.</p>
+          </div>
+          <span class="service-link">Explore Bathrooms</span>
+        </div>
+      </div>
+
+      <!-- 厨房 -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=700&q=80" alt="Kitchen Renovations">
+        </div>
+        <div class="service-info">
+          <div>
+            <h3 class="service-name">Kitchens</h3>
+            <p class="service-desc">Sleek stone benchtops, bespoke cabinetry, splashbacks, and open-plan kitchen designs.</p>
+          </div>
+          <span class="service-link">Explore Kitchens</span>
+        </div>
+      </div>
+
+      <!-- 甲板 Decking -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=700&q=80" alt="Timber & Composite Decking">
+        </div>
+        <div class="service-info">
+          <div>
+            <h3 class="service-name">Decking</h3>
+            <p class="service-desc">Merbau, Spotted Gum, and low-maintenance composite decks built to withstand the Australian sun.</p>
+          </div>
+          <span class="service-link">See Deck Builds</span>
+        </div>
+      </div>
+
+      <!-- 凉棚与车棚 Pergolas & Carports -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=700&q=80" alt="Pergolas & Carports">
+        </div>
+        <div class="service-info">
+          <div>
+            <h3 class="service-name">Pergolas & Carports</h3>
+            <p class="service-desc">Custom timber framing and Colorbond roof systems designed for year-round alfresco entertainment.</p>
+          </div>
+          <span class="service-link">Outdoor Living</span>
+        </div>
+      </div>
+
+      <!-- 挡土墙 Retaining Walls -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1584467541268-b040f83be3fd?auto=format&fit=crop&w=700&q=80" alt="Retaining Walls">
+        </div>
+        <div class="service-info">
+          <div>
+            <h3 class="service-name">Retaining Walls</h3>
+            <p class="service-desc">Engineered timber sleeper, concrete, and masonry retaining walls ensuring lasting structural integrity.</p>
+          </div>
+          <span class="service-link">Structural Walls</span>
+        </div>
+      </div>
+
+      <!-- 地砖与路面翻新 Pavement Refurbish -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=700&q=80" alt="Pavement Refurbish">
+        </div>
+        <div class="service-info">
+          <div>
+            <h3 class="service-name">Pavement Refurbish</h3>
+            <p class="service-desc">High-pressure washing, crack repair, re-grouting, and industrial protective resealing for driveways & pavers.</p>
+          </div>
+          <span class="service-link">Paving Works</span>
+        </div>
+      </div>
+
+      <!-- 围栏工程 Fence Renew -->
+      <div class="service-card">
+        <div class="service-img-wrap">
+          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=700&q=80" alt="Fence Renewal">
+        </div>
+        <div class="service-info">
+          <div>
+            <h3 class="service-name">Fence Renew</h3>
+            <p class="service-desc">Colorbond boundary fencing, treated pine paling fences, and stylish acoustic privacy screens.</p>
+          </div>
+          <span class="service-link">Fence Solutions</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 施工前后滑动对比 -->
+  <section id="transformations" class="wrap" style="padding-top: 0;">
     <div class="sec-head">
       <span class="sec-sub">THE TRANSFORMATION</span>
       <h2 class="sec-title">See The Difference</h2>
-      <p class="sec-desc">Slide to see how Renova Home turns tired spaces into timeless, sun-drenched living zones.</p>
+      <p class="sec-desc">Slide horizontally to inspect how Renova Home transforms tired spaces into bright, modern spaces.</p>
     </div>
 
     <div class="slider-box" id="sliderBox">
@@ -389,15 +568,16 @@
     <div class="sec-head">
       <span class="sec-sub">OUR PORTFOLIO</span>
       <h2 class="sec-title">Featured Project Stories</h2>
-      <p class="sec-desc">Browse our latest verified transformations across bathrooms, kitchens, and outdoor living areas.</p>
+      <p class="sec-desc">Browse our latest verified transformations. Filter by service category below.</p>
     </div>
 
     <div class="gallery-filter">
       <button class="filter-btn active" onclick="filterGallery('All')">All Works</button>
+      <button class="filter-btn" onclick="filterGallery('Pre-Sale')">Pre-Sale Makeovers</button>
       <button class="filter-btn" onclick="filterGallery('Bathrooms')">Bathrooms</button>
       <button class="filter-btn" onclick="filterGallery('Kitchens')">Kitchens</button>
       <button class="filter-btn" onclick="filterGallery('Decking')">Decking & Pergolas</button>
-      <button class="filter-btn" onclick="filterGallery('Walls')">Retaining Walls</button>
+      <button class="filter-btn" onclick="filterGallery('Walls & Fences')">Walls & Fences</button>
     </div>
 
     <div class="project-grid" id="projectGrid">
@@ -410,8 +590,8 @@
     <div class="quote-box">
       <div class="sec-head" style="margin-bottom: 30px;">
         <span class="sec-sub">FREE CONSULTATION</span>
-        <h2 class="sec-title">Get In Touch</h2>
-        <p class="sec-desc">Tell us about your home and our team will get in touch to discuss your project.</p>
+        <h2 class="sec-title">Request a Free Quote</h2>
+        <p class="sec-desc">Tell us about your home and our renovation team will get in touch to arrange an on-site inspection.</p>
       </div>
 
       <form id="quoteForm">
@@ -433,25 +613,40 @@
           <div class="f-group">
             <label>Service Category</label>
             <select id="quoteService">
-              <option>Bathroom Remodel</option>
-              <option>Kitchen Renovation</option>
-              <option>Decking & Pergola</option>
-              <option>Retaining Walls & Fencing</option>
-              <option>Full House Transformation</option>
+              <option value="Pre-Sale Renovation">Pre-Sale Renovation (Value Booster)</option>
+              <option value="Bathroom Remodel">Bathroom Remodel</option>
+              <option value="Kitchen Renovation">Kitchen Renovation</option>
+              <option value="Decking & Pergola">Decking & Pergola</option>
+              <option value="Retaining Wall">Retaining Wall</option>
+              <option value="Pavement Refurbish & Fence">Pavement Refurbish & Fence</option>
+              <option value="Full House Makeover">Full House Makeover</option>
             </select>
           </div>
         </div>
         <div class="f-group">
-          <label>Project Details / Suburb</label>
-          <textarea rows="4" placeholder="Briefly describe what you'd like to renovate..."></textarea>
+          <label>Property Suburb & Project Details</label>
+          <textarea rows="4" placeholder="Mention your suburb, desired project timeframe, or target auction date..."></textarea>
         </div>
         <button type="submit" class="f-btn">Submit Quote Request</button>
       </form>
     </div>
   </section>
 
+  <!-- 页脚 -->
   <footer>
-    <p>© 2026 Renova Home Pty Ltd. All rights reserved. Servicing Greater Melbourne.</p>
+    <a href="#" class="brand-logo-container" style="margin-bottom: 20px;">
+      <svg style="height: 60px; width: auto;" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M250 82L132 188H174V120H192V172L250 120L368 226H340L250 146L160 226H132L250 82Z" fill="#15375B"/>
+        <path d="M168 168H234C256 168 268 180 268 198C268 214 258 224 242 227L272 278H244L218 234H194V278H168V168ZM194 188V214H230C240 214 246 208 246 201C246 193 240 188 230 188H194Z" fill="#15375B"/>
+        <rect x="278" y="166" width="76" height="112" rx="2" fill="none" stroke="#15375B" stroke-width="12"/>
+        <line x1="316" y1="166" x2="316" y2="278" stroke="#15375B" stroke-width="8"/>
+        <line x1="270" y1="278" x2="362" y2="278" stroke="#15375B" stroke-width="14"/>
+        <path d="M316 260C316 235 345 220 345 220C345 220 342 248 322 258" fill="#15375B"/>
+        <text x="250" y="356" text-anchor="middle" fill="#15375B" font-family="'Montserrat', sans-serif" font-weight="700" font-size="52" letter-spacing="0.1em">RENOVA</text>
+        <text x="250" y="424" text-anchor="middle" fill="#15375B" font-family="'Montserrat', sans-serif" font-weight="700" font-size="52" letter-spacing="0.18em">HOME</text>
+      </svg>
+    </a>
+    <p>© 2026 Renova Home Pty Ltd. All rights reserved. Servicing Melbourne & Eastern Suburbs.</p>
   </footer>
 
   <!-- 隐藏管理员入口按钮 (锁头图标) -->
@@ -459,7 +654,7 @@
     <i class="fa-solid fa-lock"></i>
   </button>
 
-  <!-- 上传与发布弹窗 (老婆直接在这里发案例) -->
+  <!-- 上传与发布弹窗 -->
   <div class="admin-modal" id="adminModal">
     <div class="admin-panel">
       <span class="admin-close" id="adminClose">&times;</span>
@@ -469,16 +664,17 @@
       <form id="addProjectForm">
         <div class="f-group">
           <label>Project Title *</label>
-          <input type="text" id="pTitle" required placeholder="e.g. Coastal Oak & Stone Bathroom">
+          <input type="text" id="pTitle" required placeholder="e.g. Pre-Sale Full House Cosmetic Refresh">
         </div>
 
         <div class="f-group">
           <label>Category *</label>
           <select id="pCategory">
+            <option value="Pre-Sale">Pre-Sale Makeovers</option>
             <option value="Bathrooms">Bathrooms</option>
             <option value="Kitchens">Kitchens</option>
             <option value="Decking">Decking & Pergolas</option>
-            <option value="Walls">Retaining Walls</option>
+            <option value="Walls & Fences">Walls & Fences</option>
           </select>
         </div>
 
@@ -489,32 +685,32 @@
 
         <div class="f-group">
           <label>Project Notes / Highlights</label>
-          <textarea id="pDesc" rows="3" placeholder="Materials used, turnaround time, key features..."></textarea>
+          <textarea id="pDesc" rows="3" placeholder="Time taken, materials used, property value uplift..."></textarea>
         </div>
 
-        <button type="submit" class="f-btn" style="background: var(--accent-gold);">Publish to Website</button>
+        <button type="submit" class="f-btn" style="background: var(--accent-navy);">Publish to Showcase</button>
       </form>
     </div>
   </div>
 
   <script>
-    // 1. 初始预置案例数据
+    // 初始案例数据（包含 Pre-Sale 范例）
     const defaultProjects = [
       {
         id: 1,
-        title: "Modern Minimalist Ensuite",
-        category: "Bathrooms",
-        media: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80",
+        title: "Full Home Pre-Sale Refresh",
+        category: "Pre-Sale",
+        media: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
         isVideo: false,
-        desc: "Custom fluted vanity with brushed brass tapware and floor-to-ceiling terrazzo tiles."
+        desc: "2-week turnaround full interior repaint, updated timber laminate flooring, modern tapware and garden tidy-up."
       },
       {
         id: 2,
-        title: "Open Coastal Kitchen & Island",
-        category: "Kitchens",
-        media: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80",
+        title: "Coastal Minimalist Ensuite",
+        category: "Bathrooms",
+        media: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80",
         isVideo: false,
-        desc: "Engineered quartz benchtop with integrated breakfast bar and butler's pantry."
+        desc: "Custom timber vanity with brushed brass tapware, frameless screen, and floor-to-ceiling tiles."
       },
       {
         id: 3,
@@ -522,11 +718,10 @@
         category: "Decking",
         media: "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=800&q=80",
         isVideo: false,
-        desc: "Seamless outdoor living space with integrated LED step illumination and pergola."
+        desc: "Seamless outdoor living space with integrated step lighting and timber pergola."
       }
     ];
 
-    // 本地存储读取
     let projects = JSON.parse(localStorage.getItem('renova_projects')) || defaultProjects;
 
     function renderProjects(filter = 'All') {
@@ -557,7 +752,6 @@
         grid.appendChild(card);
       });
 
-      // 如果进入了管理模式，显示删除按钮
       if (isAdmin) {
         document.querySelectorAll('.card-del-btn').forEach(btn => btn.style.display = 'block');
       }
@@ -569,7 +763,7 @@
       renderProjects(cat);
     }
 
-    // 2. 隐藏管理员功能 (点击小锁或按 Ctrl+Shift+A)
+    // 管理员进入
     let isAdmin = false;
     const adminTrigger = document.getElementById('adminTrigger');
     const adminModal = document.getElementById('adminModal');
@@ -578,9 +772,9 @@
     function openAdmin() {
       if (!isAdmin) {
         const pass = prompt('请输入管理密码:');
-        if (pass === 'renova888') { // 默认密码，可自由更改
+        if (pass === 'renova888') {
           isAdmin = true;
-          alert('验证通过！您现在可以添加新案例或删除旧案例了。');
+          alert('验证通过！您现在可以随时上传案例或删除已有案例。');
           renderProjects();
         } else {
           alert('密码错误');
@@ -593,12 +787,11 @@
     adminTrigger.addEventListener('click', openAdmin);
     adminClose.addEventListener('click', () => adminModal.style.display = 'none');
 
-    // 3. 上传新案例处理 (支持图片 & MP4 视频)
+    // 发布新案例
     document.getElementById('addProjectForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const fileInput = document.getElementById('pFile');
       const file = fileInput.files[0];
-      
       if (!file) return;
 
       const isVideo = file.type.includes('video');
@@ -619,13 +812,12 @@
         renderProjects();
         adminModal.style.display = 'none';
         document.getElementById('addProjectForm').reset();
-        alert('恭喜！新案例已成功发布到网页中！');
+        alert('恭喜！新案例已成功呈现在展示区！');
       };
 
       reader.readAsDataURL(file);
     });
 
-    // 删除案例
     window.deleteProject = function(id) {
       if (confirm('确认删除该案例吗？')) {
         projects = projects.filter(p => p.id !== id);
@@ -634,7 +826,7 @@
       }
     };
 
-    // 4. 前后对比滑块逻辑
+    // 前后对比滑块
     const sliderBox = document.getElementById('sliderBox');
     const afterContainer = document.getElementById('afterContainer');
     const sliderHandle = document.getElementById('sliderHandle');
@@ -661,7 +853,6 @@
       this.reset();
     });
 
-    // 初始化渲染
     renderProjects();
   </script>
 </body>
