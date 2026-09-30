@@ -1,0 +1,28 @@
+backend:
+  name: github
+  repo: jasonwu0413 / renovahome-website   # ⚠️注意：把这里改成你的具体仓库，例如 JasonWu/renovahome
+  branch: main                     # 如果你的默认分支叫 master 就填 master
+
+# 上传的照片和视频存放的路径
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "projects"
+    label: "装修成功案例"
+    folder: "content/projects"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "项目标题", name: "title", widget: "string" }
+      - { label: "完工日期", name: "date", widget: "datetime" }
+      - { 
+          label: "工程分类", 
+          name: "category", 
+          widget: "select", 
+          options: ["浴室翻新", "厨房升级", "地砖/路面翻新", "围栏工程", "凉棚/车棚", "挡土墙", "露台甲板(Decking)", "综合全屋改造"] 
+        }
+      - { label: "施工前照片 (Before)", name: "before_image", widget: "image", required: false }
+      - { label: "完工高清大图 (After)", name: "after_image", widget: "image" }
+      - { label: "现场施工短视频 (MP4)", name: "project_video", widget: "file", required: false }
+      - { label: "项目说明与亮点", name: "body", widget: "markdown" }
