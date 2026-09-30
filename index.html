@@ -76,7 +76,7 @@
       color: inherit;
     }
     .brand-logo-img {
-      height: 76px;
+      height: 110px;
       width: auto;
       object-fit: contain;
       display: block;
@@ -594,25 +594,33 @@
         <p class="sec-desc">Tell us about your home and our renovation team will get in touch to arrange an on-site inspection.</p>
       </div>
 
-      <form id="quoteForm">
+      <form id="quoteForm" action="https://api.web3forms.com/submit" method="POST">
+        <!-- 填入你从 Web3Forms 邮件里收到的 Access Key -->
+        <input type="hidden" name="access_key" value="d34374f7-b3c3-4bb4-9d51-43f46299070d">
+        
+        <!-- 邮件标题，方便你在 Gmail 里一眼认出 -->
+        <input type="hidden" id="emailSubject" name="subject" value="New Renovation Quote Request - Renova Home">
+        <input type="hidden" name="from_name" value="Renova Home Website">
+
         <div class="form-grid">
           <div class="f-group">
             <label>Name *</label>
-            <input type="text" required placeholder="e.g. Sarah">
+            <input type="text" name="Client_Name" required placeholder="e.g. Sarah">
           </div>
           <div class="f-group">
             <label>Phone *</label>
-            <input type="tel" required placeholder="e.g. 0412 345 678">
+            <input type="tel" name="Client_Phone" required placeholder="e.g. 0412 345 678">
           </div>
         </div>
+
         <div class="form-grid">
           <div class="f-group">
             <label>Email *</label>
-            <input type="email" required placeholder="e.g. sarah@example.com">
+            <input type="email" name="Client_Email" required placeholder="e.g. sarah@example.com">
           </div>
           <div class="f-group">
             <label>Service Category</label>
-            <select id="quoteService">
+            <select name="Service_Required" id="quoteService">
               <option value="Pre-Sale Renovation">Pre-Sale Renovation (Value Booster)</option>
               <option value="Bathroom Remodel">Bathroom Remodel</option>
               <option value="Kitchen Renovation">Kitchen Renovation</option>
@@ -623,11 +631,14 @@
             </select>
           </div>
         </div>
+
         <div class="f-group">
           <label>Property Suburb & Project Details</label>
-          <textarea rows="4" placeholder="Mention your suburb, desired project timeframe, or target auction date..."></textarea>
+          <textarea name="Project_Details" rows="4" placeholder="Mention your suburb, desired project timeframe, or target auction date..."></textarea>
         </div>
-        <button type="submit" class="f-btn">Submit Quote Request</button>
+
+        <button type="submit" id="submitBtn" class="f-btn">Submit Quote Request</button>
+        <p id="formResult" style="margin-top: 15px; font-size: 0.85rem; text-align: center; display: none;"></p>
       </form>
     </div>
   </section>
@@ -847,10 +858,93 @@
     sliderBox.addEventListener('touchmove', (e) => { moveSlider(e.touches[0].clientX); });
 
     // 表单提交
-    document.getElementById('quoteForm').addEventListener('submit', function(e) {
+    const quoteForm = document.getElementById('quoteForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const formResult = document.getElementById('formResult');
+
+    quoteForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      alert('Thank you! Your quote request has been sent successfully. Renova Home will contact you soon.');
-      this.reset();
+
+      // 1. 获取澳洲当前本地时间戳（格式示例：[2026-09-30 22:05]）
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const timeStamp = `[${year}-${month}-${day} ${hours}:${minutes}]`;
+
+      // 2. 动态更新邮件标题：把时间戳放到最前面
+      const subjectInput = document.getElementById('emailSubject');
+      if (subjectInput) {
+        subjectInput.value = `${timeStamp} New Renovation Quote Request - Renova Home`;
+      }
+
+      // 3. 提交处理
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'SENDING INQUIRY...';
+
+      const formData = new FormData(quoteForm);
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      })
+      .then(async (response) => {
+        let json = await response.json();
+        if (response.status === 200) {
+          formResult.style.display = 'block';
+          formResult.style.color = '#2e7d32';
+          formResult.innerHTML = 'Thank you! Your quote request has been sent to our team. We will be in touch shortly.';
+          quoteForm.reset();
+        } else {
+          formResult.style.display = 'block';
+          formResult.style.color = '#c62828';
+          formResult.innerHTML = json.message || 'Something went wrong. Please try calling us directly.';
+        }
+      })
+      .catch(error => {
+        formResult.style.display = 'block';
+        formResult.style.color = '#c62828';
+        formResult.innerHTML = 'Submission failed. Please check your network connection.';
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'SUBMIT QUOTE REQUEST';
+      });
+    
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'SENDING INQUIRY...';
+
+      const formData = new FormData(quoteForm);
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      })
+      .then(async (response) => {
+        let json = await response.json();
+        if (response.status === 200) {
+          formResult.style.display = 'block';
+          formResult.style.color = '#2e7d32';
+          formResult.innerHTML = 'Thank you! Your quote request has been sent to our team. We will be in touch shortly.';
+          quoteForm.reset();
+        } else {
+          formResult.style.display = 'block';
+          formResult.style.color = '#c62828';
+          formResult.innerHTML = json.message || 'Something went wrong. Please try calling us directly.';
+        }
+      })
+      .catch(error => {
+        formResult.style.display = 'block';
+        formResult.style.color = '#c62828';
+        formResult.innerHTML = 'Submission failed. Please check your network connection.';
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'SUBMIT QUOTE REQUEST';
+      });
     });
 
     renderProjects();
