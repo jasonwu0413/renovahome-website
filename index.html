@@ -411,7 +411,17 @@
   </header>
 
   <!-- 封面 -->
+  <!-- 封面视频背景区 -->
   <section class="hero">
+    <!-- 自动循环、静音播放的高清背景视频 -->
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="hero-bg.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- 半透明深色遮罩层（确保白色大标题始终清晰易读） -->
+    <div class="hero-overlay"></div>
+
     <div class="hero-content">
       <p class="hero-sub">PRE-SALE MAKEOVERS & RESIDENTIAL RENOVATIONS</p>
       <h1 class="hero-title">CREATING DREAM HOMES & MAXIMISING VALUE</h1>
