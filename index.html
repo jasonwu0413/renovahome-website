@@ -878,115 +878,102 @@
       }
     };
 
-    // 前后对比滑块
+    // 4. 前后对比滑块逻辑（优化为全局拖拽监听，顺滑不卡顿）
     const sliderBox = document.getElementById('sliderBox');
     const afterContainer = document.getElementById('afterContainer');
     const sliderHandle = document.getElementById('sliderHandle');
     let isDragging = false;
 
-    function moveSlider(x) {
+    function moveSlider(clientX) {
+      if (!isDragging) return;
       const rect = sliderBox.getBoundingClientRect();
-      let pos = ((x - rect.left) / rect.width) * 100;
+      let pos = ((clientX - rect.left) / rect.width) * 100;
       if (pos < 0) pos = 0;
       if (pos > 100) pos = 100;
       afterContainer.style.width = pos + '%';
       sliderHandle.style.left = pos + '%';
     }
 
-    sliderBox.addEventListener('mousedown', () => isDragging = true);
-    window.addEventListener('mouseup', () => isDragging = false);
-    sliderBox.addEventListener('mousemove', (e) => { if (isDragging) moveSlider(e.clientX); });
-    sliderBox.addEventListener('touchmove', (e) => { moveSlider(e.touches[0].clientX); });
+    // 鼠标事件（挂载到 window，即使甩出容器也能流畅拖动）
+    sliderBox.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      moveSlider(e.clientX);
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    window.addEventListener('mousemove', (e) => { moveSlider(e.clientX); });
 
-    // 表单提交
+    // 移动端触屏事件
+    sliderBox.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      moveSlider(e.touches[0].clientX);
+    });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    window.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches.length > 0) {
+        moveSlider(e.touches[0].clientX);
+      }
+    });
+
+    // 5. 报价表单提交处理（彻底剔除重复冗余代码）
     const quoteForm = document.getElementById('quoteForm');
     const submitBtn = document.getElementById('submitBtn');
     const formResult = document.getElementById('formResult');
 
-    quoteForm.addEventListener('submit', function(e) {
-      e.preventDefault();
+    if (quoteForm) {
+      quoteForm.addEventListener('submit', function(e) {
+        e.preventDefault();
 
-      // 1. 获取澳洲当前本地时间戳（格式示例：[2026-09-30 22:05]）
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const timeStamp = `[${year}-${month}-${day} ${hours}:${minutes}]`;
+        // 获取澳洲当地时间戳
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const timeStamp = `[${year}-${month}-${day} ${hours}:${minutes}]`;
 
-      // 2. 动态更新邮件标题：把时间戳放到最前面
-      const subjectInput = document.getElementById('emailSubject');
-      if (subjectInput) {
-        subjectInput.value = `${timeStamp} New Renovation Quote Request - Renova Home`;
-      }
+        // 动态注入邮件标题
+        const subjectInput = document.getElementById('emailSubject');
+        if (subjectInput) {
+          subjectInput.value = `${timeStamp} New Renovation Quote Request - Renova Home`;
+        }
 
-      // 3. 提交处理
-      submitBtn.disabled = true;
-      submitBtn.innerText = 'SENDING INQUIRY...';
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'SENDING INQUIRY...';
 
-      const formData = new FormData(quoteForm);
+        const formData = new FormData(quoteForm);
 
-      fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formData
-      })
-      .then(async (response) => {
-        let json = await response.json();
-        if (response.status === 200) {
-          formResult.style.display = 'block';
-          formResult.style.color = '#2e7d32';
-          formResult.innerHTML = 'Thank you! Your quote request has been sent to our team. We will be in touch shortly.';
-          quoteForm.reset();
-        } else {
+        fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData
+        })
+        .then(async (response) => {
+          let json = await response.json();
+          if (response.status === 200) {
+            formResult.style.display = 'block';
+            formResult.style.color = '#2e7d32';
+            formResult.innerHTML = 'Thank you! Your quote request has been sent to our team. We will be in touch shortly.';
+            quoteForm.reset();
+          } else {
+            formResult.style.display = 'block';
+            formResult.style.color = '#c62828';
+            formResult.innerHTML = json.message || 'Something went wrong. Please try calling us directly.';
+          }
+        })
+        .catch(error => {
           formResult.style.display = 'block';
           formResult.style.color = '#c62828';
-          formResult.innerHTML = json.message || 'Something went wrong. Please try calling us directly.';
-        }
-      })
-      .catch(error => {
-        formResult.style.display = 'block';
-        formResult.style.color = '#c62828';
-        formResult.innerHTML = 'Submission failed. Please check your network connection.';
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'SUBMIT QUOTE REQUEST';
+          formResult.innerHTML = 'Submission failed. Please check your network connection.';
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'SUBMIT QUOTE REQUEST';
+        });
       });
-    
-      e.preventDefault();
-      submitBtn.disabled = true;
-      submitBtn.innerText = 'SENDING INQUIRY...';
+    }
 
-      const formData = new FormData(quoteForm);
-
-      fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formData
-      })
-      .then(async (response) => {
-        let json = await response.json();
-        if (response.status === 200) {
-          formResult.style.display = 'block';
-          formResult.style.color = '#2e7d32';
-          formResult.innerHTML = 'Thank you! Your quote request has been sent to our team. We will be in touch shortly.';
-          quoteForm.reset();
-        } else {
-          formResult.style.display = 'block';
-          formResult.style.color = '#c62828';
-          formResult.innerHTML = json.message || 'Something went wrong. Please try calling us directly.';
-        }
-      })
-      .catch(error => {
-        formResult.style.display = 'block';
-        formResult.style.color = '#c62828';
-        formResult.innerHTML = 'Submission failed. Please check your network connection.';
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'SUBMIT QUOTE REQUEST';
-      });
-    });
+    // 页面加载完成初始化案例列表
+    renderProjects();
 
     renderProjects();
   </script>
