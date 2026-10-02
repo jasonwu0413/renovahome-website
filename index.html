@@ -306,14 +306,16 @@
       position: relative;
       width: 100%;
       max-width: 960px;
-      height: 520px; /* 可根据需要调高调低 */
+      height: 520px;
       margin: 0 auto;
       overflow: hidden;
       border: 1px solid var(--border-light);
-      background: #222;
+      background: #1a1a1a;
       user-select: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
 
+    /* 底层图片：默认展示 AFTER (改造后新图) */
     .slider-img {
       position: absolute;
       top: 0;
@@ -324,7 +326,8 @@
       pointer-events: none;
     }
 
-    .slider-after {
+    /* 顶层滑动遮罩：裁切展示 BEFORE (改造前旧图) */
+    .slider-before-layer {
       position: absolute;
       top: 0;
       left: 0;
@@ -335,13 +338,14 @@
       z-index: 2;
     }
 
-    /* 保证顶层 After 图的尺寸与外层大盒子完全一致，避免滑动时图片变形 */
-    .slider-img-after {
+    /* 保持 Before 图与外容器同宽，确保滑动时不被挤压变形 */
+    .slider-img-before {
       width: 960px;
       max-width: none;
       height: 100%;
     }
 
+    /* 滑块手柄 */
     .slider-handle {
       position: absolute;
       top: 50%;
@@ -352,7 +356,7 @@
       background: #ffffff;
       color: var(--accent-navy);
       border-radius: 50%;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
       cursor: ew-resize;
       display: flex;
       align-items: center;
@@ -361,9 +365,42 @@
       z-index: 10;
     }
 
+    /* 左右两端常驻标识 (Before / After 标签) */
+    .slider-label {
+      position: absolute;
+      bottom: 20px;
+      padding: 6px 16px;
+      background: rgba(21, 55, 91, 0.75);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .slider-label-before { left: 20px; }
+    .slider-label-after { right: 20px; background: rgba(0, 0, 0, 0.65); }
+
+    /* 案例空状态提示卡 */
+    .no-projects-box {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      background: #ffffff;
+      border: 1px dashed var(--border-light);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
     @media (max-width: 768px) {
       .slider-box { height: 320px; }
-      .slider-img-after { width: 100vw; }
+      .slider-img-before { width: 100vw; }
+      .slider-label { bottom: 12px; font-size: 0.65rem; padding: 4px 12px; }
+      .slider-label-before { left: 12px; }
+      .slider-label-after { right: 12px; }
     }
 
     /* 报价表单 */
@@ -640,15 +677,19 @@
     </div>
 
     <div class="slider-box" id="sliderBox">
-      <!-- 改造前图片 (底层) -->
-      <img src="images/before.jpg" class="slider-img" alt="Before Renovation">
+      <!-- 左右明确标识 -->
+      <span class="slider-label slider-label-before">Before</span>
+      <span class="slider-label slider-label-after">After</span>
+
+      <!-- 底层：AFTER 改造后新图 -->
+      <img src="images/after.jpg" class="slider-img" alt="After Renovation">
       
-      <!-- 改造后图片 (顶层滑动遮罩) -->
-      <div class="slider-after" id="afterContainer">
-        <img src="images/after.jpg" class="slider-img slider-img-after" alt="After Renovation">
+      <!-- 顶层遮罩：BEFORE 改造前旧图（从左向右展开） -->
+      <div class="slider-before-layer" id="beforeLayer">
+        <img src="images/before.jpg" class="slider-img slider-img-before" alt="Before Renovation">
       </div>
       
-      <!-- 拖拽滑块手柄 -->
+      <!-- 拖拽手柄 -->
       <div class="slider-handle" id="sliderHandle"><i class="fa-solid fa-arrows-left-right"></i></div>
     </div>
   </section>
@@ -786,48 +827,33 @@
   </div>
 
   <script>
-    // 初始案例数据（包含 Pre-Sale 范例）
-    const defaultProjects = [
-      {
-        id: 1,
-        title: "Full Home Pre-Sale Refresh",
-        category: "Pre-Sale",
-        media: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-        isVideo: false,
-        desc: "2-week turnaround full interior repaint, updated timber laminate flooring, modern tapware and garden tidy-up."
-      },
-      {
-        id: 2,
-        title: "Coastal Minimalist Ensuite",
-        category: "Bathrooms",
-        media: "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80",
-        isVideo: false,
-        desc: "Custom timber vanity with brushed brass tapware, frameless screen, and floor-to-ceiling tiles."
-      },
-      {
-        id: 3,
-        title: "Spotted Gum Alfresco Deck",
-        category: "Decking",
-        media: "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=800&q=80",
-        isVideo: false,
-        desc: "Seamless outdoor living space with integrated step lighting and timber pergola."
-      }
-    ];
-
-    let projects = JSON.parse(localStorage.getItem('renova_projects')) || defaultProjects;
+  
+// 1. 案例数据管理：彻底移除默认测试假图，仅读取后台保存的案例
+    let projects = JSON.parse(localStorage.getItem('renova_projects')) || [];
 
     function renderProjects(filter = 'All') {
       const grid = document.getElementById('projectGrid');
       grid.innerHTML = '';
       
       const list = filter === 'All' ? projects : projects.filter(p => p.category === filter);
+
+      // 如果当前没有上传案例，显示友好占位提示
+      if (list.length === 0) {
+        grid.innerHTML = `
+          <div class="no-projects-box">
+            <i class="fa-regular fa-images" style="font-size: 2rem; margin-bottom: 12px; display: block; color: var(--accent-gold);"></i>
+            <p>Recent project portfolio is being updated. Stay tuned for our latest completed projects.</p>
+          </div>
+        `;
+        return;
+      }
       
       list.forEach(p => {
         const card = document.createElement('div');
         card.className = 'project-card';
         
         const mediaHtml = p.isVideo 
-          ? `<video src="${p.media}" controls></video>`
+          ? `<video src="${p.media}" controls playsinline></video>`
           : `<img src="${p.media}" alt="${p.title}">`;
 
         card.innerHTML = `
@@ -848,6 +874,40 @@
         document.querySelectorAll('.card-del-btn').forEach(btn => btn.style.display = 'block');
       }
     }
+
+    // 2. 滑块拖动逻辑（左侧 Before，右侧 After）
+    const sliderBox = document.getElementById('sliderBox');
+    const beforeLayer = document.getElementById('beforeLayer');
+    const sliderHandle = document.getElementById('sliderHandle');
+    let isDragging = false;
+
+    function moveSlider(clientX) {
+      if (!isDragging) return;
+      const rect = sliderBox.getBoundingClientRect();
+      let pos = ((clientX - rect.left) / rect.width) * 100;
+      if (pos < 0) pos = 0;
+      if (pos > 100) pos = 100;
+      beforeLayer.style.width = pos + '%';
+      sliderHandle.style.left = pos + '%';
+    }
+
+    sliderBox.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      moveSlider(e.clientX);
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    window.addEventListener('mousemove', (e) => { moveSlider(e.clientX); });
+
+    sliderBox.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      moveSlider(e.touches[0].clientX);
+    });
+    window.addEventListener('touchend', () => { isDragging = false; });
+    window.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches.length > 0) {
+        moveSlider(e.touches[0].clientX);
+      }
+    });
 
     function filterGallery(cat) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
