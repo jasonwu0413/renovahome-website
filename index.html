@@ -301,34 +301,69 @@
       display: none;
     }
 
-    /* 施工前后滑块 */
+    /* 施工前后滑块自适应容器 */
     .slider-box {
       position: relative;
       width: 100%;
       max-width: 960px;
-      height: 480px;
+      height: 520px; /* 可根据需要调高调低 */
       margin: 0 auto;
       overflow: hidden;
       border: 1px solid var(--border-light);
+      background: #222;
+      user-select: none;
     }
-    .slider-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; user-select: none; }
-    .slider-after { position: absolute; inset: 0 auto 0 0; width: 50%; overflow: hidden; border-right: 2px solid #fff; }
+
+    .slider-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .slider-after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      border-right: 2px solid #ffffff;
+      z-index: 2;
+    }
+
+    /* 保证顶层 After 图的尺寸与外层大盒子完全一致，避免滑动时图片变形 */
+    .slider-img-after {
+      width: 960px;
+      max-width: none;
+      height: 100%;
+    }
+
     .slider-handle {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 40px;
-      height: 40px;
-      background: #fff;
+      width: 44px;
+      height: 44px;
+      background: #ffffff;
+      color: var(--accent-navy);
       border-radius: 50%;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       cursor: ew-resize;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       z-index: 10;
+    }
+
+    @media (max-width: 768px) {
+      .slider-box { height: 320px; }
+      .slider-img-after { width: 100vw; }
     }
 
     /* 报价表单 */
@@ -605,10 +640,15 @@
     </div>
 
     <div class="slider-box" id="sliderBox">
-      <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80" class="slider-img" alt="Before">
+      <!-- 改造前图片 (底层) -->
+      <img src="images/before.jpg" class="slider-img" alt="Before Renovation">
+      
+      <!-- 改造后图片 (顶层滑动遮罩) -->
       <div class="slider-after" id="afterContainer">
-        <img src="https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80" class="slider-img" style="width: 960px; max-width: none;" alt="After">
+        <img src="images/after.jpg" class="slider-img slider-img-after" alt="After Renovation">
       </div>
+      
+      <!-- 拖拽滑块手柄 -->
       <div class="slider-handle" id="sliderHandle"><i class="fa-solid fa-arrows-left-right"></i></div>
     </div>
   </section>
