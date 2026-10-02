@@ -827,17 +827,17 @@
   </div>
 
   <script>
-  
-// 1. 案例数据管理：彻底移除默认测试假图，仅读取后台保存的案例
+    // 1. 案例数据管理：仅读取后台保存的案例
     let projects = JSON.parse(localStorage.getItem('renova_projects')) || [];
+    let isAdmin = false;
 
     function renderProjects(filter = 'All') {
       const grid = document.getElementById('projectGrid');
+      if (!grid) return;
       grid.innerHTML = '';
       
       const list = filter === 'All' ? projects : projects.filter(p => p.category === filter);
 
-      // 如果当前没有上传案例，显示友好占位提示
       if (list.length === 0) {
         grid.innerHTML = `
           <div class="no-projects-box">
@@ -875,48 +875,15 @@
       }
     }
 
-    // 2. 滑块拖动逻辑（左侧 Before，右侧 After）
-    const sliderBox = document.getElementById('sliderBox');
-    const beforeLayer = document.getElementById('beforeLayer');
-    const sliderHandle = document.getElementById('sliderHandle');
-    let isDragging = false;
-
-    function moveSlider(clientX) {
-      if (!isDragging) return;
-      const rect = sliderBox.getBoundingClientRect();
-      let pos = ((clientX - rect.left) / rect.width) * 100;
-      if (pos < 0) pos = 0;
-      if (pos > 100) pos = 100;
-      beforeLayer.style.width = pos + '%';
-      sliderHandle.style.left = pos + '%';
-    }
-
-    sliderBox.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      moveSlider(e.clientX);
-    });
-    window.addEventListener('mouseup', () => { isDragging = false; });
-    window.addEventListener('mousemove', (e) => { moveSlider(e.clientX); });
-
-    sliderBox.addEventListener('touchstart', (e) => {
-      isDragging = true;
-      moveSlider(e.touches[0].clientX);
-    });
-    window.addEventListener('touchend', () => { isDragging = false; });
-    window.addEventListener('touchmove', (e) => {
-      if (isDragging && e.touches.length > 0) {
-        moveSlider(e.touches[0].clientX);
-      }
-    });
-
     function filterGallery(cat) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
       renderProjects(cat);
     }
 
-    // 管理员进入
-    let isAdmin = false;
+    // 2. 隐藏管理员入口 (点击右下角小锁)
     const adminTrigger = document.getElementById('adminTrigger');
     const adminModal = document.getElementById('adminModal');
     const adminClose = document.getElementById('adminClose');
@@ -936,39 +903,42 @@
       adminModal.style.display = 'flex';
     }
 
-    adminTrigger.addEventListener('click', openAdmin);
-    adminClose.addEventListener('click', () => adminModal.style.display = 'none');
+    if (adminTrigger) adminTrigger.addEventListener('click', openAdmin);
+    if (adminClose) adminClose.addEventListener('click', () => adminModal.style.display = 'none');
 
     // 发布新案例
-    document.getElementById('addProjectForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const fileInput = document.getElementById('pFile');
-      const file = fileInput.files[0];
-      if (!file) return;
+    const addProjectForm = document.getElementById('addProjectForm');
+    if (addProjectForm) {
+      addProjectForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const fileInput = document.getElementById('pFile');
+        const file = fileInput.files[0];
+        if (!file) return;
 
-      const isVideo = file.type.includes('video');
-      const reader = new FileReader();
+        const isVideo = file.type.includes('video');
+        const reader = new FileReader();
 
-      reader.onload = function(event) {
-        const newProj = {
-          id: Date.now(),
-          title: document.getElementById('pTitle').value,
-          category: document.getElementById('pCategory').value,
-          media: event.target.result,
-          isVideo: isVideo,
-          desc: document.getElementById('pDesc').value
+        reader.onload = function(event) {
+          const newProj = {
+            id: Date.now(),
+            title: document.getElementById('pTitle').value,
+            category: document.getElementById('pCategory').value,
+            media: event.target.result,
+            isVideo: isVideo,
+            desc: document.getElementById('pDesc').value
+          };
+
+          projects.unshift(newProj);
+          localStorage.setItem('renova_projects', JSON.stringify(projects));
+          renderProjects();
+          adminModal.style.display = 'none';
+          addProjectForm.reset();
+          alert('恭喜！新案例已成功呈现在展示区！');
         };
 
-        projects.unshift(newProj);
-        localStorage.setItem('renova_projects', JSON.stringify(projects));
-        renderProjects();
-        adminModal.style.display = 'none';
-        document.getElementById('addProjectForm').reset();
-        alert('恭喜！新案例已成功呈现在展示区！');
-      };
-
-      reader.readAsDataURL(file);
-    });
+        reader.readAsDataURL(file);
+      });
+    }
 
     window.deleteProject = function(id) {
       if (confirm('确认删除该案例吗？')) {
@@ -978,43 +948,43 @@
       }
     };
 
-    // 4. 前后对比滑块逻辑（优化为全局拖拽监听，顺滑不卡顿）
+    // 3. Before/After 顺滑滑动对比逻辑 (左侧展开 Before，右侧露出 After)
     const sliderBox = document.getElementById('sliderBox');
-    const afterContainer = document.getElementById('afterContainer');
+    const beforeLayer = document.getElementById('beforeLayer');
     const sliderHandle = document.getElementById('sliderHandle');
     let isDragging = false;
 
     function moveSlider(clientX) {
-      if (!isDragging) return;
+      if (!isDragging || !sliderBox || !beforeLayer || !sliderHandle) return;
       const rect = sliderBox.getBoundingClientRect();
       let pos = ((clientX - rect.left) / rect.width) * 100;
       if (pos < 0) pos = 0;
       if (pos > 100) pos = 100;
-      afterContainer.style.width = pos + '%';
+      beforeLayer.style.width = pos + '%';
       sliderHandle.style.left = pos + '%';
     }
 
-    // 鼠标事件（挂载到 window，即使甩出容器也能流畅拖动）
-    sliderBox.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      moveSlider(e.clientX);
-    });
-    window.addEventListener('mouseup', () => { isDragging = false; });
-    window.addEventListener('mousemove', (e) => { moveSlider(e.clientX); });
+    if (sliderBox) {
+      sliderBox.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        moveSlider(e.clientX);
+      });
+      window.addEventListener('mouseup', () => { isDragging = false; });
+      window.addEventListener('mousemove', (e) => { moveSlider(e.clientX); });
 
-    // 移动端触屏事件
-    sliderBox.addEventListener('touchstart', (e) => {
-      isDragging = true;
-      moveSlider(e.touches[0].clientX);
-    });
-    window.addEventListener('touchend', () => { isDragging = false; });
-    window.addEventListener('touchmove', (e) => {
-      if (isDragging && e.touches.length > 0) {
+      sliderBox.addEventListener('touchstart', (e) => {
+        isDragging = true;
         moveSlider(e.touches[0].clientX);
-      }
-    });
+      });
+      window.addEventListener('touchend', () => { isDragging = false; });
+      window.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches.length > 0) {
+          moveSlider(e.touches[0].clientX);
+        }
+      });
+    }
 
-    // 5. 报价表单提交处理（彻底剔除重复冗余代码）
+    // 4. 报价表单无刷新提交
     const quoteForm = document.getElementById('quoteForm');
     const submitBtn = document.getElementById('submitBtn');
     const formResult = document.getElementById('formResult');
@@ -1023,7 +993,6 @@
       quoteForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // 获取澳洲当地时间戳
         const now = new Date();
         const year = now.getFullYear();
         const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -1032,7 +1001,6 @@
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const timeStamp = `[${year}-${month}-${day} ${hours}:${minutes}]`;
 
-        // 动态注入邮件标题
         const subjectInput = document.getElementById('emailSubject');
         if (subjectInput) {
           subjectInput.value = `${timeStamp} New Renovation Quote Request - Renova Home`;
@@ -1072,9 +1040,7 @@
       });
     }
 
-    // 页面加载完成初始化案例列表
-    renderProjects();
-
+    // 初始化渲染案例
     renderProjects();
   </script>
 </body>
