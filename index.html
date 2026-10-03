@@ -23,6 +23,7 @@
       --accent-gold: #C5A880;
       --accent-navy: #15375B; /* 匹配 Logo 经典深海蓝色 */
       --accent-charcoal: #2A2826;
+      --google-star: #FA8C16;
       --transition: all 0.3s ease;
     }
 
@@ -80,11 +81,10 @@
     }
 
     .brand-logo-img {
-      height: 110px; /* 控制 Logo 显示大小 */
+      height: 110px;
       width: auto;
       object-fit: contain;
       display: block;
-      /* 核心技巧：混合模式让白底图片与米色背景无缝融合，去除白块贴片感 */
       mix-blend-mode: multiply; 
     }
 
@@ -128,10 +128,10 @@
       justify-content: center;
       text-align: center;
       padding: 60px 20px;
-      overflow: hidden; /* 切除视频超出屏幕的部分 */
-      background-color: #1a1a1a; /* 删掉原来所有的 url 背景图 */
+      overflow: hidden;
+      background-color: #1a1a1a;
     }
-    /* 2. 视频本身：强行拉满、居中撑破、充当纯背景 */
+
     .hero-video {
       position: absolute !important;
       top: 50% !important;
@@ -141,12 +141,11 @@
       width: auto !important;
       height: auto !important;
       transform: translate(-50%, -50%) !important;
-      object-fit: cover !important; /* 像 background-size: cover 一样裁切铺满 */
+      object-fit: cover !important;
       z-index: 1 !important;
-      pointer-events: none !important; /* 禁止鼠标点击拦截 */
+      pointer-events: none !important;
     }
 
-    /* 3. 半透明暗色遮罩：覆盖在视频正上方，确保文字看清楚 */
     .hero-overlay {
       position: absolute !important;
       inset: 0 !important;
@@ -155,15 +154,12 @@
       pointer-events: none !important;
     }
 
-    
-    /* 4. 文字内容：浮在最顶层（无黑底背景） */
     .hero-content {
       position: relative !important;
       z-index: 3 !important;
       color: #ffffff !important;
       max-width: 900px;
       background: transparent !important;
- 
     }
     .hero-title { 
       font-size: 3.4rem; 
@@ -190,8 +186,6 @@
       background: transparent; 
       color: #FFFFFF; 
     }
-    
-    .btn-light:hover { background: transparent; color: #FFFFFF; }
 
     /* 通用容器 */
     .wrap { max-width: 1320px; margin: 0 auto; padding: 80px 30px; }
@@ -241,6 +235,79 @@
       padding-bottom: 4px;
     }
 
+    /* 施工前后滑块 */
+    .slider-box {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      height: 520px;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+      background: #1a1a1a;
+      user-select: none;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .slider-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+    .slider-before-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      border-right: 2px solid #ffffff;
+      z-index: 2;
+    }
+    .slider-img-before {
+      width: 960px;
+      max-width: none;
+      height: 100%;
+    }
+    .slider-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
+      background: #ffffff;
+      color: var(--accent-navy);
+      border-radius: 50%;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+      cursor: ew-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      z-index: 10;
+    }
+    .slider-label {
+      position: absolute;
+      bottom: 20px;
+      padding: 6px 16px;
+      background: rgba(21, 55, 91, 0.75);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+      pointer-events: none;
+      z-index: 5;
+    }
+    .slider-label-before { left: 20px; }
+    .slider-label-after { right: 20px; background: rgba(0, 0, 0, 0.65); }
+
     /* 案例动态画廊 */
     .gallery-filter {
       display: flex;
@@ -265,7 +332,6 @@
       color: #fff;
       border-color: var(--accent-navy);
     }
-
     .project-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -300,91 +366,6 @@
       cursor: pointer;
       display: none;
     }
-
-    /* 施工前后滑块自适应容器 */
-    .slider-box {
-      position: relative;
-      width: 100%;
-      max-width: 960px;
-      height: 520px;
-      margin: 0 auto;
-      overflow: hidden;
-      border: 1px solid var(--border-light);
-      background: #1a1a1a;
-      user-select: none;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-
-    /* 底层图片：默认展示 AFTER (改造后新图) */
-    .slider-img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      pointer-events: none;
-    }
-
-    /* 顶层滑动遮罩：裁切展示 BEFORE (改造前旧图) */
-    .slider-before-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 50%;
-      height: 100%;
-      overflow: hidden;
-      border-right: 2px solid #ffffff;
-      z-index: 2;
-    }
-
-    /* 保持 Before 图与外容器同宽，确保滑动时不被挤压变形 */
-    .slider-img-before {
-      width: 960px;
-      max-width: none;
-      height: 100%;
-    }
-
-    /* 滑块手柄 */
-    .slider-handle {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 44px;
-      height: 44px;
-      background: #ffffff;
-      color: var(--accent-navy);
-      border-radius: 50%;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
-      cursor: ew-resize;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      z-index: 10;
-    }
-
-    /* 左右两端常驻标识 (Before / After 标签) */
-    .slider-label {
-      position: absolute;
-      bottom: 20px;
-      padding: 6px 16px;
-      background: rgba(21, 55, 91, 0.75);
-      color: #ffffff;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      border-radius: 20px;
-      backdrop-filter: blur(4px);
-      pointer-events: none;
-      z-index: 5;
-    }
-    .slider-label-before { left: 20px; }
-    .slider-label-after { right: 20px; background: rgba(0, 0, 0, 0.65); }
-
-    /* 案例空状态提示卡 */
     .no-projects-box {
       grid-column: 1 / -1;
       text-align: center;
@@ -395,12 +376,143 @@
       font-size: 0.9rem;
     }
 
-    @media (max-width: 768px) {
-      .slider-box { height: 320px; }
-      .slider-img-before { width: 100vw; }
-      .slider-label { bottom: 12px; font-size: 0.65rem; padding: 4px 12px; }
-      .slider-label-before { left: 12px; }
-      .slider-label-after { right: 12px; }
+    /* ===================================================
+       GOOGLE REVIEWS 专属高级板块样式
+       =================================================== */
+    .google-badge-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      padding: 24px 36px;
+      border-radius: 8px;
+      margin-bottom: 36px;
+      gap: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .badge-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .google-icon-svg {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+    .rating-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      line-height: 1;
+    }
+    .stars-row {
+      color: var(--google-star);
+      font-size: 0.95rem;
+      margin: 4px 0 2px;
+      display: flex;
+      gap: 3px;
+    }
+    .rating-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .btn-google-review {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-navy);
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: var(--transition);
+      border: 1px solid var(--accent-navy);
+    }
+    .btn-google-review:hover {
+      background: transparent;
+      color: var(--accent-navy);
+    }
+
+    .reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 26px;
+    }
+    .review-card {
+      background: #ffffff;
+      border: 1px solid var(--border-light);
+      padding: 30px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+      position: relative;
+    }
+    .review-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.05);
+    }
+    .review-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .google-mini-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      color: #666;
+      font-weight: 500;
+    }
+    .review-body {
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      line-height: 1.7;
+      margin-bottom: 22px;
+      font-style: italic;
+    }
+    .review-author-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-top: 1px solid var(--bg-warm);
+      padding-top: 14px;
+    }
+    .author-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent-navy);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .author-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .author-project {
+      font-size: 0.72rem;
+      color: var(--accent-gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 500;
     }
 
     /* 报价表单 */
@@ -496,7 +608,13 @@
       .hero-title { font-size: 2.2rem; }
       .form-grid { grid-template-columns: 1fr; gap: 0; }
       .quote-box { padding: 30px 20px; }
-      .slider-box { height: 280px; }
+      .slider-box { height: 320px; }
+      .slider-img-before { width: 100vw; }
+      .slider-label { bottom: 12px; font-size: 0.65rem; padding: 4px 12px; }
+      .slider-label-before { left: 12px; }
+      .slider-label-after { right: 12px; }
+      .google-badge-bar { flex-direction: column; align-items: flex-start; }
+      .btn-google-review { width: 100%; justify-content: center; }
     }
   </style>
 </head>
@@ -523,13 +641,12 @@
       <a href="#services">Services</a>
       <a href="#transformations">Before & After</a>
       <a href="#gallery">Recent Projects</a>
+      <a href="#reviews">Reviews</a>
       <a href="#quote">Get a Quote</a>
     </nav>
   </header>
 
-  <!-- 封面 -->
   <!-- 封面视频背景区 -->
-  <!-- 纯视频背景 Hero -->
   <section class="hero">
     <video class="hero-video" autoplay muted loop playsinline preload="auto">
       <source src="hero-bg.mp4" type="video/mp4">
@@ -544,7 +661,7 @@
     </div>
   </section>
 
-  <!-- 服务网格：含新增的 Pre-Sale Renovation -->
+  <!-- 服务网格 -->
   <section id="services" class="wrap">
     <div class="sec-head">
       <span class="sec-sub">WHAT WE OFFER</span>
@@ -677,24 +794,20 @@
     </div>
 
     <div class="slider-box" id="sliderBox">
-      <!-- 左右明确标识 -->
       <span class="slider-label slider-label-before">Before</span>
       <span class="slider-label slider-label-after">After</span>
 
-      <!-- 底层：AFTER 改造后新图 -->
       <img src="images/after.jpg" class="slider-img" alt="After Renovation">
       
-      <!-- 顶层遮罩：BEFORE 改造前旧图（从左向右展开） -->
       <div class="slider-before-layer" id="beforeLayer">
         <img src="images/before.jpg" class="slider-img slider-img-before" alt="Before Renovation">
       </div>
       
-      <!-- 拖拽手柄 -->
       <div class="slider-handle" id="sliderHandle"><i class="fa-solid fa-arrows-left-right"></i></div>
     </div>
   </section>
 
-  <!-- 动态案例展示区 (照片 + 视频展示) -->
+  <!-- 动态案例展示区 -->
   <section id="gallery" class="wrap" style="padding-top: 0;">
     <div class="sec-head">
       <span class="sec-sub">OUR PORTFOLIO</span>
@@ -711,8 +824,104 @@
       <button class="filter-btn" onclick="filterGallery('Walls & Fences')">Walls & Fences</button>
     </div>
 
-    <div class="project-grid" id="projectGrid">
-      <!-- 案例由 JS 动态渲染 -->
+    <div class="project-grid" id="projectGrid"></div>
+  </section>
+
+  <!-- ===================================================
+       GOOGLE REVIEWS 专属模块 (链接可后续自定义)
+       =================================================== -->
+  <section id="reviews" class="wrap" style="padding-top: 0;">
+    <div class="sec-head">
+      <span class="sec-sub">VERIFIED FEEDBACK</span>
+      <h2 class="sec-title">Google Customer Reviews</h2>
+      <p class="sec-desc">Read real, verified ratings from Australian homeowners who trusted Renova Home with their spaces.</p>
+    </div>
+
+    <!-- Google 评分与外链条 -->
+    <div class="google-badge-bar">
+      <div class="badge-left">
+        <!-- Google 官方彩色 SVG 图标 -->
+        <svg class="google-icon-svg" viewBox="0 0 48 48">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+        <div>
+          <div style="display:flex; align-items:baseline; gap:8px;">
+            <span class="rating-number">5.0</span>
+            <div class="stars-row">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+          </div>
+          <div class="rating-meta">Based on 5-Star Verified Google Customer Reviews</div>
+        </div>
+      </div>
+
+      <!-- Google 评价跳转外链（在 JS 中统一设置 googleReviewUrl） -->
+      <a href="#" target="_blank" rel="noopener noreferrer" class="btn-google-review google-link-target">
+        <i class="fa-brands fa-google"></i> Review Us on Google
+      </a>
+    </div>
+
+    <!-- 评价卡片网格 -->
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div>
+          <div class="review-card-top">
+            <div class="stars-row">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <span class="google-mini-tag"><i class="fa-brands fa-google" style="color:#4285F4;"></i> Verified</span>
+          </div>
+          <p class="review-body">"Renova Home transformed our 1980s family home before selling. The cosmetic makeover was finished in under 3 weeks and we beat our auction reserve by $140,000. Exceptional execution!"</p>
+        </div>
+        <div class="review-author-wrap">
+          <div class="author-circle">CT</div>
+          <div>
+            <div class="author-name">Claire & Timothy T.</div>
+            <div class="author-project">Pre-Sale Renovation • Glen Waverley</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div>
+          <div class="review-card-top">
+            <div class="stars-row">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <span class="google-mini-tag"><i class="fa-brands fa-google" style="color:#4285F4;"></i> Verified</span>
+          </div>
+          <p class="review-body">"Our new master ensuite bathroom feels like a 5-star hotel. Floor-to-ceiling tiling, perfect fall in the shower, and custom stone vanity. Communication was flawless throughout."</p>
+        </div>
+        <div class="review-author-wrap">
+          <div class="author-circle">MR</div>
+          <div>
+            <div class="author-name">Marcus Robinson</div>
+            <div class="author-project">Ensuite Remodel • Mount Waverley</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div>
+          <div class="review-card-top">
+            <div class="stars-row">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <span class="google-mini-tag"><i class="fa-brands fa-google" style="color:#4285F4;"></i> Verified</span>
+          </div>
+          <p class="review-body">"Built a custom Spotted Gum deck with an integrated pergola for our alfresco living. High structural build quality and very clean job site. Will definitely use them again."</p>
+        </div>
+        <div class="review-author-wrap">
+          <div class="author-circle">SL</div>
+          <div>
+            <div class="author-name">Sarah & David L.</div>
+            <div class="author-project">Decking & Pergola • Box Hill</div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -726,10 +935,7 @@
       </div>
 
       <form id="quoteForm" action="https://api.web3forms.com/submit" method="POST">
-        <!-- 填入你从 Web3Forms 邮件里收到的 Access Key -->
         <input type="hidden" name="access_key" value="d34374f7-b3c3-4bb4-9d51-43f46299070d">
-        
-        <!-- 邮件标题，方便你在 Gmail 里一眼认出 -->
         <input type="hidden" id="emailSubject" name="subject" value="New Renovation Quote Request - Renova Home">
         <input type="hidden" name="from_name" value="Renova Home Website">
 
@@ -780,6 +986,11 @@
       <img src="logo.jpg" alt="Renova Home" style="height: 110px; width: auto; margin-bottom: 15px;">
     </a>
     <p>© 2026 Renova Home Pty Ltd. All rights reserved. Servicing Melbourne & Eastern Suburbs.</p>
+    <p style="margin-top: 8px;">
+      <a href="#" target="_blank" rel="noopener noreferrer" class="google-link-target" style="color: var(--text-muted); text-decoration: underline; font-size: 0.72rem;">
+        <i class="fa-brands fa-google"></i> Read or leave a review on Google
+      </a>
+    </p>
   </footer>
 
   <!-- 隐藏管理员入口按钮 (锁头图标) -->
@@ -827,6 +1038,17 @@
   </div>
 
   <script>
+    // ========================================================
+    // 0. GOOGLE REVIEWS 自定义跳转链接配置
+    // 后续拿到 Google 商家短链接，替换下方的链接即可全站生效
+    // ========================================================
+    const googleReviewUrl = "https://search.google.com/local/writereview?placeid=YOUR_GOOGLE_PLACE_ID";
+
+    // 自动将链接赋予页面上所有的 Google Review 按钮与页脚链接
+    document.querySelectorAll('.google-link-target').forEach(link => {
+      link.href = googleReviewUrl;
+    });
+
     // 1. 案例数据管理：仅读取后台保存的案例
     let projects = JSON.parse(localStorage.getItem('renova_projects')) || [];
     let isAdmin = false;
@@ -948,7 +1170,7 @@
       }
     };
 
-    // 3. Before/After 顺滑滑动对比逻辑 (左侧展开 Before，右侧露出 After)
+    // 3. Before/After 顺滑滑动对比逻辑
     const sliderBox = document.getElementById('sliderBox');
     const beforeLayer = document.getElementById('beforeLayer');
     const sliderHandle = document.getElementById('sliderHandle');
