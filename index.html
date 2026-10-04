@@ -15,13 +15,13 @@
   <style>
     :root {
       --bg-cream: #FAF8F5;
-      --bg-warm: #F4EFEB;
-      --bg-white: #FFFFFF;
+      --bg-warm: #F3ECE5;       /* 稍深一阶的暖咖色，用于弱化对比 */
+      --bg-white: #FAF8F5;      /* 让原本强制纯白的卡片全部融入大背景奶油色 */
       --text-dark: #1F1E1D;
       --text-muted: #6E6864;
-      --border-light: #E8E2DC;
+      --border-light: #E5DDD5;  /* 边框稍微加深一点点，烘托轮廓感 */
       --accent-gold: #C5A880;
-      --accent-navy: #15375B; /* 匹配 Logo 经典深海蓝色 */
+      --accent-navy: #15375B;
       --accent-charcoal: #2A2826;
       --google-star: #FA8C16;
       --transition: all 0.3s ease;
@@ -201,7 +201,7 @@
       gap: 30px;
     }
     .service-card {
-      background: var(--bg-white);
+      background: #FCFBF9;
       border: 1px solid var(--border-light);
       text-decoration: none;
       color: inherit;
@@ -338,7 +338,7 @@
       gap: 32px;
     }
     .project-card {
-      background: #fff;
+      background: #FCFBF9;
       border: 1px solid var(--border-light);
       overflow: hidden;
       display: flex;
@@ -376,145 +376,7 @@
       font-size: 0.9rem;
     }
 
-    /* ===================================================
-       GOOGLE REVIEWS 专属高级板块样式
-       =================================================== */
-    .google-badge-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      background: #ffffff;
-      border: 1px solid var(--border-light);
-      padding: 24px 36px;
-      border-radius: 8px;
-      margin-bottom: 36px;
-      gap: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    }
-    .badge-left {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-    .google-icon-svg {
-      width: 44px;
-      height: 44px;
-      flex-shrink: 0;
-    }
-    .rating-number {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.4rem;
-      font-weight: 600;
-      color: var(--text-dark);
-      line-height: 1;
-    }
-    .stars-row {
-      color: var(--google-star);
-      font-size: 0.95rem;
-      margin: 4px 0 2px;
-      display: flex;
-      gap: 3px;
-    }
-    .rating-meta {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-    }
-    .btn-google-review {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--accent-navy);
-      color: #ffffff;
-      padding: 12px 24px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      transition: var(--transition);
-      border: 1px solid var(--accent-navy);
-    }
-    .btn-google-review:hover {
-      background: transparent;
-      color: var(--accent-navy);
-    }
-
-    .reviews-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 26px;
-    }
-    .review-card {
-      background: #ffffff;
-      border: 1px solid var(--border-light);
-      padding: 30px 26px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: var(--transition);
-      position: relative;
-    }
-    .review-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 28px rgba(0,0,0,0.05);
-    }
-    .review-card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-    .google-mini-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
-      color: #666;
-      font-weight: 500;
-    }
-    .review-body {
-      font-size: 0.9rem;
-      color: var(--text-dark);
-      line-height: 1.7;
-      margin-bottom: 22px;
-      font-style: italic;
-    }
-    .review-author-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-top: 1px solid var(--bg-warm);
-      padding-top: 14px;
-    }
-    .author-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--accent-navy);
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .author-name {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text-dark);
-    }
-    .author-project {
-      font-size: 0.72rem;
-      color: var(--accent-gold);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      font-weight: 500;
-    }
-
+    
     /* 报价表单 */
     .quote-box {
       background: #fff;
@@ -828,7 +690,7 @@
   </section>
 
   <!-- ===================================================
-       GOOGLE REVIEWS 专属模块 (链接可后续自定义)
+       GOOGLE REVIEWS 官方动态评价模块 (Elfsight 驱动)
        =================================================== -->
   <section id="reviews" class="wrap" style="padding-top: 0;">
     <div class="sec-head">
@@ -836,6 +698,13 @@
       <h2 class="sec-title">Google Customer Reviews</h2>
       <p class="sec-desc">Read real, verified ratings from Australian homeowners who trusted Renova Home with their spaces.</p>
     </div>
+
+    <!-- Elfsight Google Reviews 官方容器 -->
+    <div class="elfsight-reviews-wrapper" style="min-height: 200px;">
+      <script src="https://elfsightcdn.com/platform.js" async></script>
+      <div class="elfsight-app-67137fc3-8177-4ebe-ad5b-91debacef2da" data-elfsight-app-lazy></div>
+    </div>
+  </section>
 
     <!-- Google 评分与外链条 -->
     <div class="google-badge-bar">
