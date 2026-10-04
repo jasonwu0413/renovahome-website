@@ -918,7 +918,17 @@
       link.href = googleReviewUrl;
     });
 
-    // 1. 案例数据管理：仅读取后台保存的案例
+    // 0. 自动清洗掉浏览器中任何残留的 Unsplash 网络假图缓存
+    try {
+      const cached = JSON.parse(localStorage.getItem('renova_projects'));
+      if (Array.isArray(cached) && cached.some(item => item.media && item.media.includes('unsplash.com'))) {
+        localStorage.removeItem('renova_projects');
+      }
+    } catch (e) {
+      localStorage.removeItem('renova_projects');
+    }
+
+    // 1. 案例数据管理：默认纯净空数组，仅读取后台上传的真实案例
     let projects = JSON.parse(localStorage.getItem('renova_projects')) || [];
     let isAdmin = false;
 
@@ -968,8 +978,8 @@
 
     function filterGallery(cat) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      if (event && event.target) {
-        event.target.classList.add('active');
+      if (window.event && window.event.target) {
+        window.event.target.classList.add('active');
       }
       renderProjects(cat);
     }
