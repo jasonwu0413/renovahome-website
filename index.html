@@ -308,6 +308,49 @@
     .slider-label-before { left: 20px; }
     .slider-label-after { right: 20px; background: rgba(0, 0, 0, 0.65); }
 
+    /* Before-After 套系切换箭头 */
+    .slider-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(21, 55, 91, 0.75);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      z-index: 20;
+      transition: var(--transition);
+      backdrop-filter: blur(4px);
+    }
+    .slider-nav-btn:hover {
+      background: var(--accent-navy);
+      transform: translateY(-50%) scale(1.08);
+    }
+    .slider-nav-btn.prev { left: 20px; }
+    .slider-nav-btn.next { right: 20px; }
+
+    /* 当前套系指示标签与计数 */
+    .slider-caption-bar {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    .slider-caption-title {
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-right: 8px;
+    }
+
     /* 案例动态画廊 */
     .gallery-filter {
       display: flex;
@@ -722,20 +765,36 @@
     <div class="sec-head">
       <span class="sec-sub">THE TRANSFORMATION</span>
       <h2 class="sec-title">See The Difference</h2>
-      <p class="sec-desc">Slide horizontally to inspect how Renova Home transforms tired spaces into bright, modern spaces.</p>
+      <p class="sec-desc">Slide horizontally to inspect how Renova Home transforms tired spaces. Use arrows to view more projects.</p>
     </div>
 
     <div class="slider-box" id="sliderBox">
+      <!-- 左右切换套系按钮 -->
+      <button type="button" class="slider-nav-btn prev" onclick="changeCompareSet(-1)" title="Previous transformation">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <button type="button" class="slider-nav-btn next" onclick="changeCompareSet(1)" title="Next transformation">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+
       <span class="slider-label slider-label-before">Before</span>
       <span class="slider-label slider-label-after">After</span>
 
-      <img src="images/after.jpg" class="slider-img" alt="After Renovation">
+      <!-- 底层 After 图 -->
+      <img src="images/after.jpg" id="sliderAfterImg" class="slider-img" alt="After Renovation">
       
+      <!-- 顶层 Before 图裁切层 -->
       <div class="slider-before-layer" id="beforeLayer">
-        <img src="images/before.jpg" class="slider-img slider-img-before" alt="Before Renovation">
+        <img src="images/before.jpg" id="sliderBeforeImg" class="slider-img slider-img-before" alt="Before Renovation">
       </div>
       
       <div class="slider-handle" id="sliderHandle"><i class="fa-solid fa-arrows-left-right"></i></div>
+    </div>
+
+    <!-- 底部项目标题与计数 -->
+    <div class="slider-caption-bar">
+      <span id="compareTitle" class="slider-caption-title">Full Home Makeover</span>
+      <span id="compareCounter">(1 / 3)</span>
     </div>
   </section>
 
@@ -1114,10 +1173,51 @@
       }
     }
 
-    // 3. Before/After 顺滑滑动对比逻辑
+    // ========================================================
+    // 3. Before / After 多套系对比与拖动手柄逻辑
+    // ========================================================
+    const comparisonSets = [
+      {
+        title: "Full Pre-Sale Interior Transformation",
+        before: "images/before.jpg",
+        after: "images/after.jpg"
+      },
+      {
+        title: "Pool Removal",
+        before: "images/pool-removal-before-2.jpg", // 替换为你的真实图片路径
+        after: "images/pool-removal-after-2.jpg"
+      },
+     
+    ];
+
+    let currentCompareIndex = 0;
     const sliderBox = document.getElementById('sliderBox');
     const beforeLayer = document.getElementById('beforeLayer');
     const sliderHandle = document.getElementById('sliderHandle');
+    const beforeImg = document.getElementById('sliderBeforeImg');
+    const afterImg = document.getElementById('sliderAfterImg');
+    const compareTitle = document.getElementById('compareTitle');
+    const compareCounter = document.getElementById('compareCounter');
+
+    // 切换图套函数
+    window.changeCompareSet = function(step) {
+      if (!comparisonSets.length) return;
+      currentCompareIndex = (currentCompareIndex + step + comparisonSets.length) % comparisonSets.length;
+      const set = comparisonSets[currentCompareIndex];
+
+      if (beforeImg) beforeImg.src = set.before;
+      if (afterImg) afterImg.src = set.after;
+      if (compareTitle) compareTitle.innerText = set.title;
+      if (compareCounter) compareCounter.innerText = `(${currentCompareIndex + 1} / ${comparisonSets.length})`;
+
+      // 切换新图后将手柄重置到中间 50%
+      if (beforeLayer && sliderHandle) {
+        beforeLayer.style.width = '50%';
+        sliderHandle.style.left = '50%';
+      }
+    };
+
+    // 滑动拖拽手柄
     let isDragging = false;
 
     function moveSlider(clientX) {
@@ -1131,23 +1231,32 @@
     }
 
     if (sliderBox) {
+      // 鼠标拖动（阻止事件冒泡到切换按钮）
       sliderBox.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.slider-nav-btn')) return;
         isDragging = true;
         moveSlider(e.clientX);
       });
       window.addEventListener('mouseup', () => { isDragging = false; });
       window.addEventListener('mousemove', (e) => { moveSlider(e.clientX); });
 
+      // 移动端触摸拖动
       sliderBox.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.slider-nav-btn')) return;
         isDragging = true;
         moveSlider(e.touches[0].clientX);
-      });
+      }, { passive: true });
       window.addEventListener('touchend', () => { isDragging = false; });
       window.addEventListener('touchmove', (e) => {
         if (isDragging && e.touches.length > 0) {
           moveSlider(e.touches[0].clientX);
         }
       });
+    }
+
+    // 初始化显示第一套的描述与计数
+    if (comparisonSets.length > 0) {
+      changeCompareSet(0);
     }
 
     // 4. 报价表单无刷新提交
