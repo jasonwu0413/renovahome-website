@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortune Telling Today | 万能决策 & 运势盒</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Fortune Telling Today - 每日运势与午餐决策盒">
+    <meta property="og:description" content="今天吃什么？今日运势如何？让天意转盘为你决定！">
+    <meta property="og:url" content="https://fortune-telling.today">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Fortune Telling Today - 每日运势与午餐决策盒">
+    <meta name="twitter:description" content="今天吃什么？今日运势如何？让天意转盘为你决定！">
+
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --bg-color: #f5f7fa;
+            --card-color: #ffffff;
+            --text-color: #2c3e50;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-color);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            box-sizing: border-box;
+        }
+
+        /* 顶部品牌与域名标识 */
+        .brand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .brand-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .brand-domain {
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            background: #ebf8ff;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* 顶部场景标签 */
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            background: #e0e6ed;
+            color: var(--text-color);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* 动画转盘区域 (固定盘面，旋转指针) */
+        .wheel-section {
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 2px dashed #eee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 15px 0;
+        }
+
+        /* 静态饼图转盘 */
+        .pie-chart {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .wheel-text {
+            font-size: 3.5px;
+            font-weight: bold;
+            fill: white;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.6);
+            pointer-events: none;
+        }
+
+        /* 旋转指针中心轴与指针线 */
+        .pointer-pivot {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1);
+            transform-origin: center center;
+        }
+
+        /* 针尖 */
+        .pointer-arrow {
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 20px solid #e74c3c;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+        }
+
+        /* 中心固定圆点 */
+        .pointer-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 18px;
+            background: #e74c3c;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .num-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 5px 0;
+            height: 35px;
+        }
+
+        .result-display {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            min-height: 30px;
+            color: #e67e22;
+        }
+
+        button.main-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        button.main-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* 社媒分享模块样式 */
+        .share-section {
+            display: none;
+            width: 100%;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid #edf2f7;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .share-label {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+
+        .share-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-x { background-color: #0f1419; }
+        .btn-fb { background-color: #1877f2; }
+        .btn-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+
+        /* 提示消息 Toast */
+        .toast-msg {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            white-space: nowrap;
+        }
+
+        /* IG 分享卡片预览弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        }
+
+        .modal-card h4 {
+            margin: 0 0 12px 0;
+            color: var(--text-color);
+        }
+
+        .card-preview-img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            margin-bottom: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* 概率占比 Bar */
+        .prob-bar-container {
+            margin: 15px 0 10px 0;
+        }
+
+        .prob-bar-label {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .prob-bar {
+            display: flex;
+            height: 26px;
+            width: 100%;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #edf2f7;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .prob-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: width 0.3s ease;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding: 0 4px;
+        }
+
+        /* 设置面板 */
+        details {
+            margin-top: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+            color: #4a5568;
+            user-select: none;
+        }
+
+        .rule-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .rule-row input[type="number"] {
+            width: 55px;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .rule-row input[type="text"] {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .btn-add { background: var(--success-color); color: white; margin-top: 10px; }
+        .btn-del { background: var(--danger-color); color: white; }
+
+        .editor-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        /* 打卡区域 */
+        .log-input-section {
+            margin-top: 20px;
+            display: none;
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ffe899;
+        }
+
+        select.full-input, input.full-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin: 8px 0 10px 0;
+            font-size: 1rem;
+            background: white;
+        }
+
+        /* 日历部分样式 */
+        .calendar-section {
+            margin-top: 25px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-header button {
+            background: #edf2f7;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .calendar-header button:hover {
+            background: #e2e8f0;
+        }
+
+        .calendar-title {
+            font-weight: bold;
+            font-size: 1.05rem;
+        }
+
+        .calendar-summary {
+            font-size: 0.9rem;
+            color: #2b6cb0;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-align: right;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+        }
+
+        .calendar-day-head {
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: #718096;
+            padding-bottom: 4px;
+        }
+
+        .calendar-day-cell {
+            min-height: 48px;
+            background: white;
+            border: 1px solid #edf2f7;
+            border-radius: 4px;
+            padding: 2px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            font-size: 0.75rem;
+        }
+
+        .calendar-day-cell.empty {
+            background: transparent;
+            border-color: transparent;
+        }
+
+        .calendar-day-cell.today {
+            border-color: var(--primary-color);
+            background: #ebf8ff;
+        }
+
+        .calendar-day-cell.has-data {
+            background: #f0fff4;
+            border-color: #9ae6b4;
+        }
+
+        .day-num {
+            font-weight: bold;
+            color: #4a5568;
+            font-size: 0.75rem;
+        }
+
+        .day-food {
+            color: #2d3748;
+            font-size: 0.65rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 1px;
+        }
+
+        .day-cost {
+            color: #e53e3e;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-top: auto;
+        }
+
+        /* 日志列表 */
+        .log-section { margin-top: 25px; }
+        .log-list { list-style: none; padding: 0; }
+        .log-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 顶部品牌栏 -->
+    <div class="brand-header">
+        <div class="brand-title">🔮 万能决策 & 运势盒</div>
+        <a href="https://fortune-telling.today" class="brand-domain">fortune-telling.today</a>
+    </div>
+
+    <!-- 1. 场景标签切换 -->
+    <div class="category-tabs" id="categoryTabs"></div>
+
+    <!-- 2. 固定转盘 & 旋转指针区域 -->
+    <div class="wheel-section">
+        <div class="wheel-wrapper">
+            <svg class="pie-chart" id="pieSvg" viewBox="0 0 100 100"></svg>
+            
+            <div class="pointer-pivot" id="pointerPivot">
+                <div class="pointer-arrow"></div>
+                <div class="pointer-center"></div>
+            </div>
+        </div>
+        
+        <div class="num-display" id="numDisplay">抽中数字: --</div>
+        <div class="result-display" id="resultDisplay">点击按钮开始抽取</div>
+        <button id="rollBtn" class="main-btn" onclick="roll()">天意决定</button>
+
+        <!-- 新增：社交媒体分享面板 -->
+        <div class="share-section" id="shareSection">
+            <div class="share-label">✨ 分享今日天意结果至社交媒体：</div>
+            <div class="share-buttons">
+                <button class="share-btn btn-x" onclick="shareToX()">
+                    <span>𝕏</span> 分享到 X
+                </button>
+                <button class="share-btn btn-fb" onclick="shareToFacebook()">
+                    <span>📘</span> Facebook
+                </button>
+                <button class="share-btn btn-ig" onclick="shareToInstagram()">
+                    <span>📸</span> Instagram 卡片
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 打卡记录区域 -->
+    <div class="log-input-section" id="logInputSection">
+        <h3 style="margin-top:0;" id="logInputTitle">记录打卡</h3>
+        
+        <div id="selectionGroup">
+            <label>实际吃了/选择了：</label>
+            <select id="actualSelect" class="full-input" onchange="handleSelectChange(this.value)"></select>
+            
+            <div id="customInputContainer" style="display: none;">
+                <label style="color: #d69e2e; font-size: 0.9rem;">输入新美食名称（自动存入Pool）：</label>
+                <input type="text" id="customInput" class="full-input" placeholder="如：螺蛳粉 / 麻辣香锅">
+            </div>
+
+            <!-- AUD 花费输入框 -->
+            <label style="margin-top: 5px; display: block;">花了多少钱 (AUD $)：</label>
+            <input type="number" step="0.01" id="costInput" class="full-input" placeholder="如：18.50 (可留空)">
+        </div>
+
+        <button class="main-btn" style="background: var(--success-color); margin-top: 5px;" onclick="saveLog()">保存日志</button>
+    </div>
+
+    <!-- 4. 自定义选项规则编辑器 -->
+    <details id="rulesDetails">
+        <summary>⚙️ 自定义该场景的概率规则</summary>
+        
+        <div class="prob-bar-container">
+            <div class="prob-bar-label">
+                <span>📊 当前概率分布比重</span>
+                <span id="probTotalLabel">总计: 100%</span>
+            </div>
+            <div class="prob-bar" id="probBar"></div>
+        </div>
+
+        <div id="rulesContainer" style="margin-top: 10px;"></div>
+        <button class="btn-sm btn-add" onclick="addRuleRow()">+ 添加新选项</button>
+        <div class="editor-actions">
+            <button class="btn-sm" style="background:#e67e22; color:white;" onclick="rebalanceWeightsUI()">一键平均分配权重</button>
+            <button class="btn-sm" style="background:#718096; color:white;" onclick="saveCurrentRules()">保存规则配置</button>
+        </div>
+    </details>
+
+    <!-- 5. 月度花费日历 (仅在有打卡/花费的场景下显示) -->
+    <div class="calendar-section" id="calendarSection">
+        <div class="calendar-header">
+            <button onclick="prevMonth()">&lt; 上个月</button>
+            <div class="calendar-title" id="calendarMonthTitle">2026年 10月</div>
+            <button onclick="nextMonth()">下个月 &gt;</button>
+        </div>
+        <div class="calendar-summary" id="calendarSummary">本月累计花费: $0.00 AUD</div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+
+    <!-- 6. 历史日志 -->
+    <div class="log-section">
+        <h3>历史日志</h3>
+        <ul class="log-list" id="logList"></ul>
+    </div>
+</div>
+
+<!-- Instagram 分享海报弹窗 -->
+<div class="modal-overlay" id="igModal" onclick="if(event.target===this) closeIgModal()">
+    <div class="modal-card">
+        <h4>📸 Instagram 专属分享卡</h4>
+        <img id="igCardPreview" class="card-preview-img" alt="Share Card">
+        <div style="font-size: 0.8rem; color: #718096; margin-bottom: 10px;">
+            已自动复制分享文案！保存图片或直接调用系统分享发布到 IG Story / Feed：
+        </div>
+        <div class="modal-actions">
+            <button style="background: var(--primary-color); color: white;" onclick="downloadOrNativeShareCard()">💾 保存 / 分享图片</button>
+            <button style="background: #e2e8f0; color: #4a5568;" onclick="closeIgModal()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- 隐藏绘图 Canvas (用于生成 IG 分享图) -->
+<canvas id="shareCanvas" width="800" height="1000" style="display:none;"></canvas>
+
+<!-- Toast 提示框 -->
+<div class="toast-msg" id="toastMsg"></div>
+
+<script>
+    const SITE_URL = "https://fortune-telling.today";
+
+    const palette = [
+        '#3498db', '#2ecc71', '#e74c3c', '#f1c40f', '#9b59b6', 
+        '#1abc9c', '#e67e22', '#34495e', '#ff7979', '#badc58'
+    ];
+
+    const defaultCategories = {
+        lunch: {
+            name: "午餐决定",
+            maxNum: 100,
+            avoidYesterdayRepeat: true,
+            hasActualSelection: true, 
+            rules: [
+                { min: 1, max: 20, result: "肯德基 / 麦当劳" },
+                { min: 21, max: 40, result: "日式拉面" },
+                { min: 41, max: 60, result: "HSP (Halal Snack Pack)" },
+                { min: 61, max: 80, result: "Hot Bar / 麻辣烫" },
+                { min: 81, max: 100, result: "新口味探店盲盒" }
+            ]
+        },
+        fortune: {
+            name: "今日运势",
+            maxNum: 100,
+            avoidYesterdayRepeat: false,
+            hasActualSelection: false, 
+            rules: [
+                { min: 1, max: 10, result: "【大吉】宜尝试新事物！" },
+                { min: 11, max: 40, result: "【中吉】顺利平稳的一天。" },
+                { min: 41, max: 80, result: "【小吉】保持好心情，多喝水。" },
+                { min: 81, max: 100, result: "【末吉】注意休息，防疲劳。" }
+            ]
+        }
+    };
+
+    let categories = {};
+    let currentCatKey = 'lunch';
+    let currentRoll = null;
+    let currentSuggestion = "";
+    let currentRotation = 0;
+
+    // 日历当前浏览的年月
+    let currentCalYear = new Date().getFullYear();
+    let currentCalMonth = new Date().getMonth();
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadData();
+        renderTabs();
+        switchCategory(currentCatKey);
+    });
+
+    function showToast(msg) {
+        const toast = document.getElementById('toastMsg');
+        toast.innerText = msg;
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 3000);
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem('appCategories');
+        if (saved) {
+            categories = JSON.parse(saved);
+            if (categories.lunch) categories.lunch.hasActualSelection = true;
+            if (categories.fortune) categories.fortune.hasActualSelection = false;
+        } else {
+            categories = defaultCategories;
+        }
+    }
+
+    function saveData() {
+        localStorage.setItem('appCategories', JSON.stringify(categories));
+    }
+
+    function getTodayString() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function renderTabs() {
+        const tabsContainer = document.getElementById('categoryTabs');
+        tabsContainer.innerHTML = '';
+        Object.keys(categories).forEach(key => {
+            const btn = document.createElement('button');
+            btn.className = `tab-btn ${key === currentCatKey ? 'active' : ''}`;
+            btn.innerText = categories[key].name;
+            btn.onclick = () => switchCategory(key);
+            tabsContainer.appendChild(btn);
+        });
+    }
+
+    function switchCategory(key) {
+        currentCatKey = key;
+        renderTabs();
+        renderRulesEditor();
+        renderPieChart();
+        checkTodayStatus();
+        renderLogs();
+        renderCalendar();
+        
+        const calSection = document.getElementById('calendarSection');
+        if (categories[key].hasActualSelection) {
+            calSection.style.display = 'block';
+        } else {
+            calSection.style.display = 'none';
+        }
+    }
+
+    function getResultFromNum(num, catKey) {
+        const rules = categories[catKey].rules;
+        for (let r of rules) {
+            if (num >= r.min && num <= r.max) {
+                return r.result;
+            }
+        }
+        return "未定义结果";
+    }
+
+    // 绘制固定盘面
+    function renderPieChart() {
+        const svg = document.getElementById('pieSvg');
+        svg.innerHTML = '';
+        const rules = categories[currentCatKey].rules;
+        const total = categories[currentCatKey].maxNum || 100;
+
+        let cumulativePercent = 0;
+
+        rules.forEach((rule, idx) => {
+            const count = (rule.max - rule.min + 1);
+            const percent = count / total;
+            const color = palette[idx % palette.length];
+
+            const startPercent = cumulativePercent;
+            const endPercent = cumulativePercent + percent;
+            cumulativePercent += percent;
+
+            const [startX, startY] = getCoordinatesForPercent(startPercent - 0.25);
+            const [endX, endY] = getCoordinatesForPercent(endPercent - 0.25);
+
+            const largeArcFlag = percent > 0.5 ? 1 : 0;
+            const pathData = [
+                `M 50 50`,
+                `L ${startX} ${startY}`,
+                `A 50 50 0 ${largeArcFlag} 1 ${endX} ${endY}`,
+                `Z`
+            ].join(' ');
+
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathData);
+            path.setAttribute('fill', color);
+            svg.appendChild(path);
+
+            if (percent > 0.03) {
+                const midPercent = (startPercent + percent / 2) - 0.25;
+                const textAngle = midPercent * 360;
+                const textRad = textAngle * Math.PI / 180;
+                const textX = 50 + 32 * Math.cos(textRad);
+                const textY = 50 + 32 * Math.sin(textRad);
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', textX);
+                text.setAttribute('y', textY);
+                text.setAttribute('class', 'wheel-text');
+                
+                let rotateDeg = textAngle;
+                if (rotateDeg > 90 && rotateDeg < 270) rotateDeg += 180;
+                else if (rotateDeg < -90 && rotateDeg > -270) rotateDeg += 180;
+                
+                text.setAttribute('transform', `rotate(${rotateDeg}, ${textX}, ${textY})`);
+
+                let label = rule.result;
+                if (label.length > 7) label = label.substring(0, 5) + '..';
+                text.textContent = label;
+
+                svg.appendChild(text);
+            }
+        });
+
+        renderProbBar();
+    }
+
+    function getCoordinatesForPercent(percent) {
+        const x = 50 + 50 * Math.cos(2 * Math.PI * percent);
+        const y = 50 + 50 * Math.sin(2 * Math.PI * percent);
+        return [x, y];
+    }
+
+    function renderProbBar() {
+        const barContainer = document.getElementById('probBar');
+        barContainer.innerHTML = '';
+        const rules = categories[currentCatKey].rules;
+        const total = categories[currentCatKey].maxNum || 100;
+
+        rules.forEach((rule, idx) => {
+            const count = Math.max(0, (rule.max - rule.min + 1));
+            const percent = ((count / total) * 100).toFixed(0);
+            const color = palette[idx % palette.length];
+
+            const seg = document.createElement('div');
+            seg.className = 'prob-segment';
+            seg.style.width = `${percent}%`;
+            seg.style.backgroundColor = color;
+            seg.title = `${rule.result}: ${percent}% (${rule.min}-${rule.max})`;
+            
+            if (percent >= 12) {
+                seg.innerText = `${rule.result} (${percent}%)`;
+            } else if (percent >= 5) {
+                seg.innerText = `${percent}%`;
+            }
+            
+            barContainer.appendChild(seg);
+        });
+    }
+
+    // 状态检查 & 离开页面后的自动恢复机制
+    function checkTodayStatus() {
+        const today = getTodayString();
+        const lastDate = localStorage.getItem(`lastRoll_${currentCatKey}`);
+        const btn = document.getElementById('rollBtn');
+        const pointer = document.getElementById('pointerPivot');
+        const shareSec = document.getElementById('shareSection');
+
+        if (lastDate === today) {
+            btn.disabled = true;
+            btn.innerText = "今天已经决定过啦！";
+
+            const logs = JSON.parse(localStorage.getItem(`logs_${currentCatKey}`) || '[]');
+            const todayLog = logs.find(l => l.date === today);
+
+            if (!todayLog) {
+                // 今天抽过了，但还没点“保存日志”
+                const tempRollStr = localStorage.getItem(`todayTempRoll_${currentCatKey}`);
+                if (tempRollStr) {
+                    const temp = JSON.parse(tempRollStr);
+                    currentRoll = temp.num;
+                    currentSuggestion = temp.suggestion;
+
+                    restoreWheelAndDisplay(temp.num, temp.suggestion);
+                    showLogSectionUI(temp.suggestion);
+                    shareSec.style.display = 'block';
+                }
+            } else {
+                // 今天已经保存过打卡日志，同样恢复展示结果和分享栏
+                currentRoll = todayLog.num;
+                currentSuggestion = todayLog.actual || todayLog.suggested;
+                restoreWheelAndDisplay(todayLog.num, currentSuggestion);
+                document.getElementById('logInputSection').style.display = 'none';
+                shareSec.style.display = 'block';
+            }
+        } else {
+            btn.disabled = false;
+            btn.innerText = "天意决定";
+            document.getElementById('numDisplay').innerText = "抽中数字: --";
+            document.getElementById('resultDisplay').innerText = `已切换至：${categories[currentCatKey].name}`;
+            document.getElementById('logInputSection').style.display = 'none';
+            shareSec.style.display = 'none';
+            
+            pointer.style.transition = 'none';
+            pointer.style.transform = 'rotate(0deg)';
+            currentRotation = 0;
+        }
+    }
+
+    function restoreWheelAndDisplay(num, textResult) {
+        const pointer = document.getElementById('pointerPivot');
+        document.getElementById('numDisplay').innerText = `抽中数字: ${num}`;
+        document.getElementById('resultDisplay').innerText = `结果：${textResult}`;
+
+        const cat = categories[currentCatKey];
+        const targetDegree = ((num - 0.5) / cat.maxNum) * 360;
+        pointer.style.transition = 'none';
+        pointer.style.transform = `rotate(${targetDegree}deg)`;
+        currentRotation = targetDegree;
+    }
+
+    function showLogSectionUI(suggestion) {
+        const cat = categories[currentCatKey];
+        const selectionGroup = document.getElementById('selectionGroup');
+        const title = document.getElementById('logInputTitle');
+
+        if (cat.hasActualSelection) {
+            title.innerText = "打卡今日午餐";
+            selectionGroup.style.display = 'block';
+            setupSelectOptions(suggestion);
+        } else {
+            title.innerText = "打卡今日运势";
+            selectionGroup.style.display = 'none';
+        }
+
+        document.getElementById('logInputSection').style.display = 'block';
+    }
+
+    // 执行抽取
+    function roll() {
+        const cat = categories[currentCatKey];
+        const btn = document.getElementById('rollBtn');
+        btn.disabled = true;
+
+        const logs = JSON.parse(localStorage.getItem(`logs_${currentCatKey}`) || '[]');
+        let yesterdayActual = (cat.avoidYesterdayRepeat && logs.length > 0) ? logs[0].actual : "";
+
+        let finalNum, suggestion, attempts = 0;
+        do {
+            finalNum = Math.floor(Math.random() * cat.maxNum) + 1;
+            suggestion = getResultFromNum(finalNum, currentCatKey);
+            attempts++;
+        } while (cat.avoidYesterdayRepeat && suggestion === yesterdayActual && attempts < 50);
+
+        currentRoll = finalNum;
+        currentSuggestion = suggestion;
+
+        // 旋转指针
+        const targetDegree = ((finalNum - 0.5) / cat.maxNum) * 360; 
+        const baseRounds = 5 * 360; 
+        
+        const currentMod = currentRotation % 360;
+        let diff = targetDegree - currentMod;
+        if (diff <= 0) diff += 360; 
+        
+        currentRotation += baseRounds + diff;
+
+        const pointer = document.getElementById('pointerPivot');
+        pointer.style.transition = 'transform 4s cubic-bezier(0.15, 0.85, 0.15, 1)';
+        pointer.style.transform = `rotate(${currentRotation}deg)`;
+
+        document.getElementById('resultDisplay').innerText = "命运指针旋转中...";
+
+        const today = getTodayString();
+        localStorage.setItem(`lastRoll_${currentCatKey}`, today);
+        localStorage.setItem(`todayTempRoll_${currentCatKey}`, JSON.stringify({ num: finalNum, suggestion: suggestion }));
+
+        setTimeout(() => {
+            document.getElementById('numDisplay').innerText = `抽中数字: ${finalNum}`;
+            document.getElementById('resultDisplay').innerText = `结果：${suggestion}`;
+            
+            showLogSectionUI(suggestion);
+            document.getElementById('shareSection').style.display = 'block';
+            btn.innerText = "今天已经决定过啦！";
+        }, 4000);
+    }
+
+    // --- 社媒分享核心逻辑 ---
+    function getShareCopyText() {
+        const catName = categories[currentCatKey].name;
+        const emoji = currentCatKey === 'lunch' ? '🍱' : '🔮';
+        return `${emoji} 我在 Fortune Telling Today 的【${catName}】中抽到了数字 ${currentRoll}：${currentSuggestion}！\n👉 来测测你的今日天意：${SITE_URL} #FortuneTellingToday`;
+    }
+
+    function copyTextToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+        } else {
+            fallbackCopy(text);
+        }
+    }
+
+    function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    }
+
+    // 1. 分享到 X (Twitter)
+    function shareToX() {
+        if (!currentRoll) return;
+        const catName = categories[currentCatKey].name;
+        const emoji = currentCatKey === 'lunch' ? '🍱' : '🔮';
+        const text = `${emoji} 今日【${catName}】天意抽签结果：${currentSuggestion} (幸运数字: ${currentRoll})！✨\n来测测你的今日运势与决定：`;
+        const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(SITE_URL)}&hashtags=FortuneTellingToday`;
+        window.open(xUrl, '_blank', 'width=600,height=450');
+    }
+
+    // 2. 分享到 Facebook
+    function shareToFacebook() {
+        if (!currentRoll) return;
+        const text = getShareCopyText();
+        copyTextToClipboard(text);
+        showToast("📋 抽签文案已复制！可在 Facebook 弹窗中直接粘贴");
+        
+        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}&quote=${encodeURIComponent(text)}`;
+        setTimeout(() => {
+            window.open(fbUrl, '_blank', 'width=600,height=500');
+        }, 500);
+    }
+
+    // 3. 生成 Instagram 分享卡片
+    function shareToInstagram() {
+        if (!currentRoll) return;
+        copyTextToClipboard(getShareCopyText());
+
+        const canvas = document.getElementById('shareCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 绘制渐变背景
+        const grad = ctx.createLinearGradient(0, 0, 800, 1000);
+        if (currentCatKey === 'lunch') {
+            grad.addColorStop(0, '#ff9966');
+            grad.addColorStop(1, '#ff5e62');
+        } else {
+            grad.addColorStop(0, '#667eea');
+            grad.addColorStop(1, '#764ba2');
+        }
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 800, 1000);
+
+        // 绘制中心白色圆角卡片
+        ctx.fillStyle = '#ffffff';
+        drawRoundRect(ctx, 60, 80, 680, 840, 32);
+        ctx.fill();
+
+        // 顶部日期与类别
+        ctx.fillStyle = '#718096';
+        ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${getTodayString()} · ${categories[currentCatKey].name}`, 400, 165);
+
+        // 裝飾分割线
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(160, 205);
+        ctx.lineTo(640, 205);
+        ctx.stroke();
+
+        // 抽中幸运数字圆环
+        ctx.fillStyle = currentCatKey === 'lunch' ? '#fff5f5' : '#ebf8ff';
+        ctx.beginPath();
+        ctx.arc(400, 390, 120, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#718096';
+        ctx.font = 'bold 26px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText('天意数字', 400, 340);
+
+        ctx.fillStyle = currentCatKey === 'lunch' ? '#e74c3c' : '#3498db';
+        ctx.font = 'bold 96px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText(`${currentRoll}`, 400, 445);
+
+        // 抽取结果主文案（支持自动换行）
+        ctx.fillStyle = '#2c3e50';
+        ctx.font = 'bold 46px -apple-system, BlinkMacSystemFont, sans-serif';
+        wrapText(ctx, currentSuggestion, 400, 630, 560, 64);
+
+        // 底部网站品牌水印
+        ctx.fillStyle = '#a0aec0';
+        ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText('🔮 测测你的今日天意', 400, 815);
+
+        ctx.fillStyle = '#3498db';
+        ctx.font = 'bold 32px -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.fillText('fortune-telling.today', 400, 860);
+
+        // 显示预览弹窗
+        const dataUrl = canvas.toDataURL('image/png');
+        document.getElementById('igCardPreview').src = dataUrl;
+        document.getElementById('igModal').style.display = 'flex';
+    }
+
+    function drawRoundRect(ctx, x, y, width, height, radius) {
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        const chars = text.split('');
+        let line = '';
+        let currentY = y;
+        for (let i = 0; i < chars.length; i++) {
+            const testLine = line + chars[i];
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxWidth && i > 0) {
+                ctx.fillText(line, x, currentY);
+                line = chars[i];
+                currentY += lineHeight;
+            } else {
+                line = testLine;
+            }
+        }
+        ctx.fillText(line, x, currentY);
+    }
+
+    function closeIgModal() {
+        document.getElementById('igModal').style.display = 'none';
+    }
+
+    async function downloadOrNativeShareCard() {
+        const canvas = document.getElementById('shareCanvas');
+        canvas.toBlob(async (blob) => {
+            const fileName = `fortune-${getTodayString()}.png`;
+            const file = new File([blob], fileName, { type: 'image/png' });
+
+            // 移动端若支持 Web Share API 直接调起原生分享（可一键选 Instagram）
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Fortune Telling Today',
+                        text: getShareCopyText()
+                    });
+                    return;
+                } catch (err) {
+                    // 用户取消或失败则降级为下载图片
+                }
+            }
+
+            // 桌面端或回退下载
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+            showToast("✅ 卡片已下载，快去上传到 Instagram 吧！");
+        }, 'image/png');
+    }
+
+    // --- 打卡与规则逻辑 ---
+    function setupSelectOptions(defaultSuggestion) {
+        const select = document.getElementById('actualSelect');
+        select.innerHTML = '';
+        const rules = categories[currentCatKey].rules;
+        
+        rules.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.result;
+            opt.innerText = r.result;
+            if (r.result === defaultSuggestion) opt.selected = true;
+            select.appendChild(opt);
+        });
+
+        const otherOpt = document.createElement('option');
+        otherOpt.value = "__OTHER__";
+        otherOpt.innerText = "➕ 其他（不在Pool中，手动输入）";
+        select.appendChild(otherOpt);
+
+        if (!rules.some(r => r.result === defaultSuggestion)) {
+            select.value = "__OTHER__";
+        }
+
+        handleSelectChange(select.value);
+    }
+
+    function handleSelectChange(value) {
+        const customContainer = document.getElementById('customInputContainer');
+        if (value === '__OTHER__') {
+            customContainer.style.display = 'block';
+            document.getElementById('customInput').value = '';
+            document.getElementById('customInput').focus();
+        } else {
+            customContainer.style.display = 'none';
+        }
+    }
+
+    function autoDistributeWeights(rulesList, targetMax = 100) {
+        const n = rulesList.length;
+        if (n === 0) return rulesList;
+
+        const step = Math.floor(targetMax / n);
+        let currentStart = 1;
+
+        for (let i = 0; i < n; i++) {
+            rulesList[i].min = currentStart;
+            if (i === n - 1) {
+                rulesList[i].max = targetMax;
+            } else {
+                rulesList[i].max = currentStart + step - 1;
+            }
+            currentStart = rulesList[i].max + 1;
+        }
+        return rulesList;
+    }
+
+    function saveLog() {
+        const cat = categories[currentCatKey];
+        let finalActual = currentSuggestion;
+        let finalCost = 0;
+
+        if (cat.hasActualSelection) {
+            const selectVal = document.getElementById('actualSelect').value;
+            finalActual = selectVal;
+
+            if (selectVal === '__OTHER__') {
+                const customVal = document.getElementById('customInput').value.trim();
+                if (!customVal) return alert("请在文本框中输入具体的名称！");
+                
+                finalActual = customVal;
+                const exists = cat.rules.some(r => r.result.trim().toLowerCase() === customVal.toLowerCase());
+                if (!exists) {
+                    cat.rules.push({ min: 0, max: 0, result: customVal });
+                    autoDistributeWeights(cat.rules, cat.maxNum);
+                    saveData();
+                    renderRulesEditor();
+                    renderPieChart();
+                }
+            }
+
+            const costVal = parseFloat(document.getElementById('costInput').value);
+            finalCost = isNaN(costVal) ? 0 : Math.max(0, costVal);
+        }
+
+        // 如果用户修改了实际吃的食物，同步更新分享文案里的结果
+        currentSuggestion = finalActual;
+        document.getElementById('resultDisplay').innerText = `结果：${finalActual}`;
+
+        const logs = JSON.parse(localStorage.getItem(`logs_${currentCatKey}`) || '[]');
+        logs.unshift({
+            date: getTodayString(),
+            num: currentRoll,
+            suggested: currentSuggestion,
+            actual: finalActual,
+            cost: finalCost
+        });
+
+        localStorage.setItem(`logs_${currentCatKey}`, JSON.stringify(logs));
+        localStorage.removeItem(`todayTempRoll_${currentCatKey}`);
+
+        document.getElementById('logInputSection').style.display = 'none';
+        document.getElementById('costInput').value = '';
+        
+        renderLogs();
+        renderCalendar();
+        showToast("✅ 今日打卡日志已保存！");
+    }
+
+    function renderLogs() {
+        const cat = categories[currentCatKey];
+        const logs = JSON.parse(localStorage.getItem(`logs_${currentCatKey}`) || '[]');
+        const container = document.getElementById('logList');
+        
+        container.innerHTML = logs.map(l => {
+            const costDisplay = (l.cost && l.cost > 0) 
+                ? `<span style="color:#e53e3e; font-weight:bold; margin-left:8px;">$${Number(l.cost).toFixed(2)} AUD</span>` 
+                : '';
+
+            const detailText = cat.hasActualSelection 
+                ? `抽中 [${l.num}]: ${l.suggested}<br><span style="color:#2b6cb0">实际吃: <mark>${l.actual}</mark></span> ${costDisplay}`
+                : `抽取结果 [${l.num}]: <strong style="color:#e67e22">${l.suggested}</strong>`;
+
+            return `
+                <li class="log-item">
+                    <div>${detailText}</div>
+                    <div style="font-size:0.8rem; color:#a0aec0">${l.date}</div>
+                </li>
+            `;
+        }).join('');
+    }
+
+    // --- 日历功能 ---
+    function prevMonth() {
+        currentCalMonth--;
+        if (currentCalMonth < 0) {
+            currentCalMonth = 11;
+            currentCalYear--;
+        }
+        renderCalendar();
+    }
+
+    function nextMonth() {
+        currentCalMonth++;
+        if (currentCalMonth > 11) {
+            currentCalMonth = 0;
+            currentCalYear++;
+        }
+        renderCalendar();
+    }
+
+    function renderCalendar() {
+        document.getElementById('calendarMonthTitle').innerText = `${currentCalYear}年 ${currentCalMonth + 1}月`;
+        
+        const logs = JSON.parse(localStorage.getItem(`logs_${currentCatKey}`) || '[]');
+        
+        const logMap = {};
+        let monthlyTotal = 0;
+
+        logs.forEach(l => {
+            logMap[l.date] = l;
+            const [y, m] = l.date.split('-').map(Number);
+            if (y === currentCalYear && m === (currentCalMonth + 1)) {
+                monthlyTotal += (l.cost || 0);
+            }
+        });
+
+        document.getElementById('calendarSummary').innerText = `本月累计花费: $${monthlyTotal.toFixed(2)} AUD`;
+
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = '';
+
+        const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+        weekDays.forEach(w => {
+            const head = document.createElement('div');
+            head.className = 'calendar-day-head';
+            head.innerText = w;
+            grid.appendChild(head);
+        });
+
+        const firstDayIndex = new Date(currentCalYear, currentCalMonth, 1).getDay();
+        const totalDays = new Date(currentCalYear, currentCalMonth + 1, 0).getDate();
+
+        for (let i = 0; i < firstDayIndex; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'calendar-day-cell empty';
+            grid.appendChild(emptyCell);
+        }
+
+        const todayStr = getTodayString();
+
+        for (let d = 1; d <= totalDays; d++) {
+            const dateStr = `${currentCalYear}-${String(currentCalMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const cell = document.createElement('div');
+            cell.className = 'calendar-day-cell';
+            
+            if (dateStr === todayStr) cell.classList.add('today');
+
+            const logItem = logMap[dateStr];
+            let contentHtml = `<span class="day-num">${d}</span>`;
+
+            if (logItem) {
+                cell.classList.add('has-data');
+                const foodName = logItem.actual || logItem.suggested || '';
+                const cost = logItem.cost ? `$${Number(logItem.cost).toFixed(2)}` : '';
+
+                contentHtml += `<span class="day-food" title="${foodName}">${foodName}</span>`;
+                if (cost) {
+                    contentHtml += `<span class="day-cost">${cost}</span>`;
+                }
+            }
+
+            cell.innerHTML = contentHtml;
+            grid.appendChild(cell);
+        }
+    }
+
+    // --- 规则编辑器逻辑 ---
+    function renderRulesEditor() {
+        const container = document.getElementById('rulesContainer');
+        container.innerHTML = '';
+        const rules = categories[currentCatKey].rules;
+
+        rules.forEach((rule, idx) => {
+            const color = palette[idx % palette.length];
+            const row = document.createElement('div');
+            row.className = 'rule-row';
+            row.innerHTML = `
+                <div class="color-dot" style="background-color: ${color};"></div>
+                <input type="number" value="${rule.min}" onchange="updateRuleMemory(${idx}, 'min', this.value)">
+                <span>至</span>
+                <input type="number" value="${rule.max}" onchange="updateRuleMemory(${idx}, 'max', this.value)">
+                <input type="text" value="${rule.result}" placeholder="输出结果描述" onchange="updateRuleMemory(${idx}, 'result', this.value)">
+                <button class="btn-sm btn-del" onclick="removeRuleRow(${idx})">删除</button>
+            `;
+            container.appendChild(row);
+        });
+        renderProbBar();
+    }
+
+    function updateRuleMemory(idx, field, val) {
+        if (field === 'min' || field === 'max') val = Number(val);
+        categories[currentCatKey].rules[idx][field] = val;
+        renderProbBar();
+    }
+
+    function addRuleRow() {
+        const rules = categories[currentCatKey].rules;
+        rules.push({ min: 0, max: 0, result: "新选项" });
+        autoDistributeWeights(rules, categories[currentCatKey].maxNum);
+        renderRulesEditor();
+        renderPieChart();
+    }
+
+    function removeRuleRow(idx) {
+        const rules = categories[currentCatKey].rules;
+        rules.splice(idx, 1);
+        autoDistributeWeights(rules, categories[currentCatKey].maxNum);
+        renderRulesEditor();
+        renderPieChart();
+    }
+
+    function rebalanceWeightsUI() {
+        const rules = categories[currentCatKey].rules;
+        if (rules.length === 0) return alert("没有可以分配的选项！");
+        autoDistributeWeights(rules, categories[currentCatKey].maxNum);
+        renderRulesEditor();
+        renderPieChart();
+    }
+
+    function validateRules(rules, targetMax = 100) {
+        if (!rules || rules.length === 0) {
+            return { valid: false, msg: "配置不能为空！" };
+        }
+
+        for (let i = 0; i < rules.length; i++) {
+            const r = rules[i];
+            if (isNaN(r.min) || isNaN(r.max)) return { valid: false, msg: `第 ${i + 1} 行数值不完整！` };
+            if (r.min > r.max) return { valid: false, msg: `第 ${i + 1} 行起点不能大于终点！` };
+            if (r.min < 1) return { valid: false, msg: `第 ${i + 1} 行起点不能小于1！` };
+            if (!r.result.trim()) return { valid: false, msg: `第 ${i + 1} 行描述不能为空！` };
+        }
+
+        const sorted = [...rules].sort((a, b) => a.min - b.min);
+        if (sorted[0].min !== 1) return { valid: false, msg: "必须从 1 开始！" };
+
+        for (let i = 0; i < sorted.length - 1; i++) {
+            if (sorted[i].max >= sorted[i + 1].min) return { valid: false, msg: "存在区间覆盖重叠！" };
+            if (sorted[i].max + 1 !== sorted[i + 1].min) return { valid: false, msg: "存在区间缺失遗漏！" };
+        }
+
+        if (sorted[sorted.length - 1].max !== targetMax) return { valid: false, msg: `必须覆盖到 ${targetMax}！` };
+
+        return { valid: true };
+    }
+
+    function saveCurrentRules() {
+        const currentCat = categories[currentCatKey];
+        const validation = validateRules(currentCat.rules, currentCat.maxNum);
+
+        if (!validation.valid) {
+            alert(`⚠️ 规则保存失败：\n\n${validation.msg}`);
+            return;
+        }
+
+        currentCat.rules.sort((a, b) => a.min - b.min);
+        saveData();
+        renderRulesEditor();
+        renderPieChart();
+
+        localStorage.removeItem(`lastRoll_${currentCatKey}`);
+        localStorage.removeItem(`todayTempRoll_${currentCatKey}`);
+        
+        document.getElementById('numDisplay').innerText = "抽中数字: --";
+        document.getElementById('resultDisplay').innerText = "规则已更新，今日抽取状态已重置！";
+        document.getElementById('logInputSection').style.display = 'none';
+        document.getElementById('shareSection').style.display = 'none';
+        
+        checkTodayStatus();
+        alert("✅ 规则校验通过并保存！");
+    }
+</script>
+
+</body>
+</html>
